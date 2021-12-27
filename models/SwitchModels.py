@@ -1,13 +1,13 @@
-from abc import abstractmethod, ABCMeta
+from abc import ABCMeta
 from utils import fDBDate
 
 
 class SwitchBase(metaclass=ABCMeta):
-    def __init__(self, id: int, name: str, createdAt: str) -> None:
+    def __init__(self, id: int, pin:int, name: str, createdAt: str) -> None:
         self.id = id
         self.name = name
-        self.createdAt = fDBDate(createdAt)
-        self.purpose = self.name.split('_')[1] if '_' in self.name else None
+        self.pin = pin
+        # self.device = OutputDevice(pin)
         self.poweredAt = None
         self.status = None
     
@@ -29,8 +29,8 @@ class SwitchBase(metaclass=ABCMeta):
         print({
             'id': self.id,
             'name': self.name,
-            'createdAt': self.createdAt,
-            'purpose': self.purpose,
+            'pin': self.pin,
+            # 'device': self.device,
             'poweredAt': self.poweredAt,
             'status': self.status
         })

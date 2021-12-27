@@ -10,9 +10,12 @@ def error_handling(point) -> None:
     raise Exception(f'[Automation] {point}에 문제가 생겼습니다.')
 
 class AutomationCollector:
-    def _classify_automation_model(self, automation: dict) -> AutomationBase:
-        for model in AUTOMATION_MODELS:
-            if model.get_name() == automation['name']: return model(**automation)
+    def _classify_automation_model(self, automations: list) -> AutomationBase:
+        results = {}
+        for automation in automations:
+            found_automation_model = next(a_model for a_model in AUTOMATION_MODELS if a_model.get_name() == automation['name'])
+            results[automation['name']] = found_automation_model(**automation)
+        return results
 
     def _get_automations(self) -> dict:
         try:
@@ -22,7 +25,7 @@ class AutomationCollector:
 
     def get(self):
         automations = self._get_automations()
-        automation_models = [ self._classify_automation_model(automation) for automation in automations ]
+        automation_models = self._classify_automation_model(automations)
         if not (len(automations) == len(automation_models) == len(AUTOMATION_SUBJECTS)):
             error_handling('Automation 데이터 검증')
         return automation_models

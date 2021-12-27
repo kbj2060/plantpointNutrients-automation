@@ -9,12 +9,15 @@ def error_handling(point) -> None:
     raise Exception(f'[Automation] {point}에 문제가 생겼습니다.')
 
 class SwitchCollector:
-    def _classify_machine_model(self, machine: dict, switch: dict) -> SwitchBase:
-        for model in MACHINES_MODELS:
-            if model.get_name() in machine['name']:
-                machine_object = model(**machine)
-                machine_object.set_switch_info(status=switch['status'], poweredAt=switch['createdAt'])
-                return machine_object
+    def _classify_machine_model(self, switches: dict, machines: dict) -> SwitchBase:
+        results = {}
+        for machine in machines:
+            found_switch = next(s for s in switches if s['machine_id'] == machine['id'])
+            m_object = next(m for m in MACHINES_MODELS if m.get_name() in machine['name'])
+            m_object = m_object(**machine)
+            m_object.set_switch_info(status=found_switch['status'], poweredAt=found_switch['createdAt'])
+            results[m_object.name] = m_object
+        return results
 
     def _get_machines(self):
         machines = asyncio.run(get_machines())
@@ -48,5 +51,5 @@ class SwitchCollector:
                     print(f'Machine과 Switch가 맞지 않아 {name}에 OFF를 명령했습니다.')
             except:
                 error_handling('Machine과 Switches 데이터 검증')
-        switch_models = [ self._classify_machine_model(machine, switch) for machine, switch in zip(machines, switches) ]
+        switch_models = self._classify_machine_model(switches=switches, machines=machines)
         return switch_models
