@@ -4,9 +4,6 @@ from models.SwitchModels import SwitchBase
 from config import MACHINES_MODELS
 from utils import get_arr_diffs
 
-def error_handling(point) -> None:
-    asyncio.run(post_report(lv=3, problem=f'[Automation] {point}에 문제가 생겼습니다.'))   
-    raise Exception(f'[Automation] {point}에 문제가 생겼습니다.')
 
 class SwitchCollector:
     def _classify_machine_model(self, switches: dict, machines: dict) -> SwitchBase:
@@ -50,6 +47,6 @@ class SwitchCollector:
                     self.post_excepted_switch(name=name, machine_id=diff_machine_id)
                     print(f'Machine과 Switch가 맞지 않아 {name}에 OFF를 명령했습니다.')
             except:
-                error_handling('Machine과 Switches 데이터 검증')
+                self.error_handling('Machine과 Switches 데이터 검증')
         switch_models = self._classify_machine_model(switches=switches, machines=machines)
         return switch_models

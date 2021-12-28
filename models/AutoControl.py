@@ -33,9 +33,9 @@ class AutoControl:
 
     def control_water(self):
         # TODO : 만약 수위가 매우 낮을 경우 자동으로 물을 채우고 양액을 넣는 자동화
-        self._get_water_switches()
-        self._get_water_automation()
+        self._set_water_switches()
+        self._set_water_automation()
 
     def control_spray(self):
-        self._get_spray_switches()
-        self._get_spray_automation()
+        self._set_spray_switches()
+        self._set_spray_automation()

@@ -1,15 +1,14 @@
 
 import asyncio
 from api import get_last_automations, post_report
+from collectors.CollectorBase import CollectorBase
 from config import AUTOMATION_MODELS, AUTOMATION_SUBJECTS
 from models.AutomationModels import AutomationBase
 
 
-def error_handling(point) -> None:
-    asyncio.run(post_report(lv=3, problem=f'[Automation] {point}에 문제가 생겼습니다.'))   
-    raise Exception(f'[Automation] {point}에 문제가 생겼습니다.')
 
-class AutomationCollector:
+
+class AutomationCollector(CollectorBase):
     def _classify_automation_model(self, automations: list) -> AutomationBase:
         results = {}
         for automation in automations:
@@ -21,11 +20,11 @@ class AutomationCollector:
         try:
             return [{**asyncio.run(get_last_automations(subject)), 'name': subject} for subject in AUTOMATION_SUBJECTS]
         except:
-            error_handling('데이터 쿼리')
+            self.error_handling('데이터 쿼리')
 
     def get(self):
         automations = self._get_automations()
         automation_models = self._classify_automation_model(automations)
         if not (len(automations) == len(automation_models) == len(AUTOMATION_SUBJECTS)):
-            error_handling('Automation 데이터 검증')
+            self.error_handling('Automation 데이터 검증')
         return automation_models
