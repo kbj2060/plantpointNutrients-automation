@@ -6,8 +6,6 @@ from config import AUTOMATION_MODELS, AUTOMATION_SUBJECTS
 from models.AutomationModels import AutomationBase
 
 
-
-
 class AutomationCollector(CollectorBase):
     def _classify_automation_model(self, automations: list) -> AutomationBase:
         results = {}
@@ -18,7 +16,7 @@ class AutomationCollector(CollectorBase):
 
     def _get_automations(self) -> dict:
         try:
-            return [{**asyncio.run(get_last_automations(subject)), 'name': subject} for subject in AUTOMATION_SUBJECTS]
+            return [{**asyncio.run(get_last_automations(model.get_name())), 'name': model.get_name()} for model in AUTOMATION_MODELS]
         except:
             self.error_handling('데이터 쿼리')
 

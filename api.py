@@ -20,6 +20,10 @@ async def get_machines():
     response = requests.get(f"{ADDRESS}/machines")
     return response.json()
 
+async def get_sensors():
+    response = requests.get(f"{ADDRESS}/sensor")
+    return response.json()
+    
 async def post_report(lv, problem):
     requests.post(
         f"{ADDRESS}/report/create",
