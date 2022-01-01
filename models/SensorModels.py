@@ -1,7 +1,7 @@
 import RPi.GPIO as GPIO
 import Adafruit_DHT as dht
 import spidev
-from config import CLOCKPIN, CSPIN, MISOPIN, MOSIPIN
+from config import CLOCKPIN, CSPIN, MISOPIN, MOSIPIN, WATERTANK_HEIGHT
 import time
 
 
@@ -82,7 +82,7 @@ class WaterLevel(SensorModel):
             time_interval = stop - start      
             distance = time_interval * 17000
             distance = round(distance, 2)
-            return distance
+            return WATERTANK_HEIGHT - distance
         except:
             GPIO.cleanup()
 
