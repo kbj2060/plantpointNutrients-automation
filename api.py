@@ -35,3 +35,15 @@ async def post_switch(name, machine_id, status, controlledBy):
         f"{ADDRESS}/switch/create",
         json={ 'data': { 'name': name, 'machine_id': machine_id, 'status': status, 'controlledBy': controlledBy } }
     )
+
+async def post_temperature(value):
+    requests.post(
+        f"{ADDRESS}/temperature/create",
+        json={ 'data': { 'value': value } }
+    )
+
+async def post_humidity(value):
+    requests.post(
+        f"{ADDRESS}/humidity/create",
+        json={ 'data': { 'value': value } }
+    )

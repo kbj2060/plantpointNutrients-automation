@@ -1,5 +1,6 @@
 import RPi.GPIO as GPIO
 import Adafruit_DHT as dht
+from api import post_humidity, post_temperature
 import spidev
 from config import CLOCKPIN, CSPIN, MISOPIN, MOSIPIN, WATERTANK_HEIGHT
 import time
@@ -65,32 +66,33 @@ class WaterLevel(SensorModel):
         GPIO.setup(self.sensor.pin+1, GPIO.IN)
 
     def get_waterlevel(self):
-        try:
-            GPIO.output(self.sensor.pin, False)         
-            time.sleep(0.5)
+        # try:
+        GPIO.output(self.sensor.pin, False)         
+        time.sleep(0.5)
 
-            GPIO.output(self.sensor.pin, True)
-            time.sleep(0.00001)
-            GPIO.output(self.sensor.pin, False)
+        GPIO.output(self.sensor.pin, True)
+        time.sleep(0.00001)
+        GPIO.output(self.sensor.pin, False)
 
-            while GPIO.input(self.sensor.pin+1) == 0:
-                start = time.time()
+        while GPIO.input(self.sensor.pin+1) == 0:
+            start = time.time()
 
-            while GPIO.input(self.sensor.pin+1) == 1:
-                stop = time.time()
+        while GPIO.input(self.sensor.pin+1) == 1:
+            stop = time.time()
 
-            time_interval = stop - start      
-            distance = time_interval * 17000
-            distance = round(distance, 2)
-            return WATERTANK_HEIGHT - distance
-        except:
-            GPIO.cleanup()
+        time_interval = stop - start      
+        distance = time_interval * 17000
+        distance = round(distance, 2)
+        return WATERTANK_HEIGHT - distance
+        # except:
+        #     
 
 class DHT22(SensorModel):
     def __init__(self, id: int, name: str, pin: int, createdAt: str) -> None:
         super().__init__(id, name, pin, createdAt)
 
-    def get_humidity_temperature(self):
+    def post_humidity_temperature(self):
         humidity, temperature = dht.read_retry(dht.DHT22, self.pin)
         if humidity is not None and temperature is not None:
-            return humidity, temperature
+            post_temperature(temperature)
+            post_humidity(humidity)

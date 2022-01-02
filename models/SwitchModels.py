@@ -1,13 +1,17 @@
+import RPi.GPIO as GPIO
 from abc import ABCMeta
+from api import post_switch
+from config import NUTRIENT_AMOUNT, WATERTANK_HEIGHT
 from utils import fDBDate
-
+import time
 
 class SwitchBase(metaclass=ABCMeta):
     def __init__(self, id: int, pin:int, name: str, createdAt: str) -> None:
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(pin, GPIO.OUT)
         self.id = id
         self.name = name
         self.pin = pin
-        # self.device = OutputDevice(pin)
         self.poweredAt = None
         self.status = None
     
@@ -20,17 +24,20 @@ class SwitchBase(metaclass=ABCMeta):
         self.status = status
 
     def on(self):
-        self.status = 1
+        GPIO.output(self.pin, GPIO.LOW)
+        time.sleep(0.5)
+        post_switch(name=self.name, machine_id=self.id, status=1, controlledBy='auto')
 
     def off(self):
-        self.status = 0
+        GPIO.output(self.pin, GPIO.HIGH)
+        time.sleep(0.5)
+        post_switch(name=self.name, machine_id=self.id, status=0, controlledBy='auto')
 
     def pprint(self):
         print({
             'id': self.id,
             'name': self.name,
             'pin': self.pin,
-            # 'device': self.device,
             'poweredAt': self.poweredAt,
             'status': self.status
         })
@@ -40,7 +47,22 @@ class Valve(SwitchBase):
     pass
 
 class WaterPump(SwitchBase):
-    pass
+    def supply_water(self):
+        self.on()
+        while self.waterlevel.get_waterlevel() >= WATERTANK_HEIGHT * 0.9:
+            time.sleep(0.1)
+        self.off()
+        time.sleep(1)
+
+    def supply_nutrient(self):
+        # 20L 당 50ml
+        velocity = 40 # ml/sec
+        operating_time = NUTRIENT_AMOUNT / velocity
+        self.on()
+        time.sleep(operating_time)
+        self.off()
+        time.sleep(1)
+
 
 class LED(SwitchBase):
     pass
