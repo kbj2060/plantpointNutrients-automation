@@ -15,6 +15,14 @@ def sleep_with_text(waiting_time, text):
     time.sleep(waiting_time)
     spinner.stop_and_persist()
 
+def turn_on_log(text):
+    spinner = Halo(spinner='dots', color='green')
+    spinner.succeed(text=text)
+
+def turn_off_log(text):
+    spinner = Halo(spinner='dots', color='red')
+    spinner.succeed(text=text)
+
 def detect_outlier(arr):
     outliers=[]
     threshold=3

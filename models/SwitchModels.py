@@ -3,7 +3,7 @@ import RPi.GPIO as GPIO
 from abc import ABCMeta
 from api import post_switch
 from config import NUTRIENT_AMOUNT
-from utils import fDBDate, sleep_with_text
+from utils import fDBDate, sleep_with_text, turn_off_log, turn_on_log
 import time
 
 class SwitchBase(metaclass=ABCMeta):
@@ -26,12 +26,14 @@ class SwitchBase(metaclass=ABCMeta):
 
     def on(self):
         GPIO.output(self.pin, GPIO.LOW)
-        sleep_with_text(waiting_time=0.5, text=f"{self.get_name()} 켜졌습니다.")
+        turn_on_log(text=f"{self.get_name()} 켜졌습니다.")
+        time.sleep(0.5)
         asyncio.run(post_switch(name=self.name, machine_id=self.id, status=1, controlledBy='auto'))
 
     def off(self):
         GPIO.output(self.pin, GPIO.HIGH)
-        sleep_with_text(waiting_time=0.5, text=f"{self.get_name()} 꺼졌습니다.")
+        turn_off_log(text=f"{self.get_name()} 꺼졌습니다.")
+        time.sleep(0.5)
         asyncio.run(post_switch(name=self.name, machine_id=self.id, status=0, controlledBy='auto'))
 
     def pprint(self):
