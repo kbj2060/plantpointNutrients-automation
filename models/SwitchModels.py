@@ -1,7 +1,7 @@
 import asyncio
 import RPi.GPIO as GPIO
 from abc import ABCMeta
-from api import post_switch
+from api import post_report, post_switch
 from config import NUTRIENT_AMOUNT
 from models.SensorModels import Current
 from utils import fDBDate, turn_off_log, turn_on_log
@@ -33,16 +33,20 @@ class SwitchBase(metaclass=ABCMeta):
 
     def on(self):
         GPIO.output(self.pin, GPIO.LOW)
-        print(self.get_current())
-        turn_on_log(text=f"{self.get_name()} 켜졌습니다.")
         time.sleep(0.5)
+        current = self.get_current()
+        if current == 0:
+            asyncio.run(post_report(lv=3, problem="전류 인가 에러"))
+        turn_on_log(text=f"{self.get_name()} 켜졌습니다.")
         asyncio.run(post_switch(name=self.name, machine_id=self.id, status=1, controlledBy='auto'))
 
     def off(self):
         GPIO.output(self.pin, GPIO.HIGH)
-        print(self.get_current())
-        turn_off_log(text=f"{self.get_name()} 꺼졌습니다.")
         time.sleep(0.5)
+        current = self.get_current()
+        if current != 0:
+            asyncio.run(post_report(lv=3, problem="전류 인가 에러"))
+        turn_off_log(text=f"{self.get_name()} 꺼졌습니다.")
         asyncio.run(post_switch(name=self.name, machine_id=self.id, status=0, controlledBy='auto'))
 
     def pprint(self):
