@@ -67,7 +67,7 @@ class Current(SensorModel):
         # adcout <<= 1       # first bit is 'null' so drop it
         # return adcout
 
-    def ReadChannel(channel):
+    def ReadChannel(self, channel):
         spi = spidev.SpiDev()
         if channel > 7 or channel < 0:
             return -1
@@ -75,7 +75,7 @@ class Current(SensorModel):
         data = ((adc[1] & 3) << 8) + adc[2]
         return data
 
-    def ConvertVolts(data, places):
+    def ConvertVolts(self, data, places):
         #return .0264 * data - 13.51
         volts = (data * 3.3) / float(1023)
         volts = round(volts, places)
