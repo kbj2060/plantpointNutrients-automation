@@ -73,6 +73,8 @@ class WaterManager(ManagerBase):
             self.water_tank(WATERTANK_HEIGHT//2)
             self.waterpump_b.supply_nutrient()
             self.water_tank(WATERTANK_HEIGHT * 0.95)
+        else:
+            print("Water condition is good!")
         print("Water Control finished!")
 
 
