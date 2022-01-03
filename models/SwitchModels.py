@@ -26,12 +26,12 @@ class SwitchBase(metaclass=ABCMeta):
 
     def on(self):
         GPIO.output(self.pin, GPIO.LOW)
-        sleep_with_text(time=0.5, text=f"{self.get_name()} turned on.")
+        sleep_with_text(waiting_time=0.5, text=f"{self.get_name()} turned on.")
         asyncio.run(post_switch(name=self.name, machine_id=self.id, status=1, controlledBy='auto'))
 
     def off(self):
         GPIO.output(self.pin, GPIO.HIGH)
-        sleep_with_text(time=0.5, text=f"{self.get_name()} turned off.")
+        sleep_with_text(waiting_time=0.5, text=f"{self.get_name()} turned off.")
         asyncio.run(post_switch(name=self.name, machine_id=self.id, status=0, controlledBy='auto'))
 
     def pprint(self):
@@ -53,7 +53,7 @@ class WaterPump(SwitchBase):
         velocity = 40 # ml/sec
         operating_time = NUTRIENT_AMOUNT / velocity
         self.on()
-        sleep_with_text(time=operating_time, text=f"Nutrient supplying {operating_time}sec..")
+        sleep_with_text(waiting_time=operating_time, text=f"Nutrient supplying {operating_time}sec..")
         self.off()
         time.sleep(0.5)
 

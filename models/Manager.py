@@ -88,7 +88,7 @@ class SprayManager(ManagerBase):
         valve.on()
         time.sleep(0.1)
         self.waterpump_sprayer.on()
-        sleep_with_text(time=operating_time, text=f"Spraying..")
+        sleep_with_text(waiting_time=operating_time, text=f"Spraying..")
         self.waterpump_sprayer.off()
         time.sleep(0.1)
         valve.off()
