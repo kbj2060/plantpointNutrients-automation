@@ -111,7 +111,7 @@ class SprayManager(ManagerBase):
         last_term = (datetime.now() - self.waterpump_sprayer.poweredAt).total_seconds()/60
         if last_term >= self.sprayterm.period: # minutes
             valves = [self.valve_1, self.valve_2, self.valve_3]
-            for valve, idx in enumerate(valves):
+            for idx, valve in enumerate(valves):
                 self.spray(valve, int(self.spraytime.period) + idx * 2, idx)
             print("스프레이 자동화 종료됩니다.")
         else:
