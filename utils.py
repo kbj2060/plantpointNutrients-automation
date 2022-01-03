@@ -12,4 +12,4 @@ def sleep_with_text(waiting_time, text):
     spinner = Halo(text=text, spinner='dots')
     spinner.start()
     time.sleep(waiting_time)
-    spinner.stop()
+    spinner.stop_and_persist()

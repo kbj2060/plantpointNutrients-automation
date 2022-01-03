@@ -42,13 +42,16 @@ class WaterManager(ManagerBase):
         self.wpb_current = self._find_sensor(name='wpb_current')
 
     def empty_tank(self):
+        print("Empty Tank started!")
         self.valve_out.on()
         while self.waterlevel.get_waterlevel() <= 1: # 1cm
             time.sleep(1)
         self.valve_out.off()
         time.sleep(1)
-    
+        print("Empty Tank finished!")
+
     def water_tank(self, height):
+        print("Water Tank started!")
         self.valve_in.on()
         self.waterpump_center.on()
         while self.waterlevel.get_waterlevel() >= height:
@@ -56,8 +59,10 @@ class WaterManager(ManagerBase):
         self.waterpump_center.off()
         self.valve_in.off()
         time.sleep(1)
+        print("Water Tank finished!")
 
     def control(self):
+        print("Water Control started!")
         waterlevel = self.waterlevel.get_waterlevel()
         if waterlevel < 0 or waterlevel > WATERTANK_HEIGHT:
             post_report(lv=3, problem="수위센서측정에 문제가 생겼습니다.")
@@ -68,6 +73,7 @@ class WaterManager(ManagerBase):
             self.water_tank(WATERTANK_HEIGHT//2)
             self.waterpump_b.supply_nutrient()
             self.water_tank(WATERTANK_HEIGHT * 0.95)
+        print("Water Control finished!")
 
 
 class SprayManager(ManagerBase):
@@ -95,17 +101,16 @@ class SprayManager(ManagerBase):
         time.sleep(1)
 
     def control(self):
+        print("Spray Control started!")
         last_term = (datetime.now() - self.waterpump_sprayer.poweredAt).total_seconds()/60
         if last_term >= self.sprayterm.period: # minutes
-            spinner = Halo(text="WaterSpray Automation Started!", spinner='dots')
-            spinner.start()
             self.spray(self.valve_1, int(self.spraytime.period))
             self.spray(self.valve_2, int(self.spraytime.period) + 2)
             self.spray(self.valve_3, int(self.spraytime.period) + 4)
-            spinner.stop()
+            print("Spray Control finished!")
         else:
             print("No time to spray!")
-            
+        
 class EnvironmentManager(ManagerBase):
     def __init__(self, sensors: dict) -> None:
         self.sensors = sensors

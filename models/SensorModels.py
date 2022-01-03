@@ -86,7 +86,6 @@ class WaterLevel(SensorModel):
         time_interval = stop - start      
         distance = time_interval * 17000
         distance = round(distance, 2)
-        print(f"WaterLevel: {distance}")
         return WATERTANK_HEIGHT - distance
 
     @Halo(text='Measuring WaterLevel..', spinner='dots')
