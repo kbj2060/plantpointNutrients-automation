@@ -40,16 +40,18 @@ class WaterManager(ManagerBase):
         self.wpb_current = self._find_sensor(name='wpb_current')
 
     def empty_tank(self):
-        print("Empty Tank started!")
+        spinner = Halo()
+        spinner.info('물탱크 비우기 시작합니다.')
         self.valve_out.on()
         while self.waterlevel.get_waterlevel() <= 1: # 1cm
             time.sleep(1)
         self.valve_out.off()
         time.sleep(1)
-        print("Empty Tank finished!")
+        spinner.info('물탱크 비우기 종료합니다.')
 
     def water_tank(self, height):
-        print("Water Tank started!")
+        spinner = Halo()
+        spinner.info('물탱크 채우기 시작합니다.')
         self.valve_in.on()
         self.waterpump_center.on()
         while self.waterlevel.get_waterlevel() >= height:
@@ -57,7 +59,7 @@ class WaterManager(ManagerBase):
         self.waterpump_center.off()
         self.valve_in.off()
         time.sleep(1)
-        print("Water Tank finished!")
+        spinner.info('물탱크 채우기 종료합니다.')
 
     def control(self):
         print("양액 자동화 시스템 시작합니다.")
