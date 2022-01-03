@@ -93,26 +93,29 @@ class SprayManager(ManagerBase):
         self.v3_current = self._find_sensor(name='v3_current')
         self.wps_current = self._find_sensor(name='wps_current')
     
-    def spray(self, valve: Valve, operating_time: int):
+    def spray(self, valve: Valve, operating_time: int, idx: int):
+        spinner = Halo(text=f"{idx+1}층 스프레이 작동 중입니다..", spinner='dots')
+        spinner.start()
         valve.on()
         time.sleep(0.1)
         self.waterpump_sprayer.on()
-        sleep_with_text(waiting_time=operating_time, text=f"Spraying..")
+        time.sleep(operating_time)
         self.waterpump_sprayer.off()
         time.sleep(0.1)
         valve.off()
         time.sleep(1)
+        spinner.stop_and_persist()
 
     def control(self):
-        print("Spray Control started!")
+        print("스프레이 자동화 시작합니다.")
         last_term = (datetime.now() - self.waterpump_sprayer.poweredAt).total_seconds()/60
         if last_term >= self.sprayterm.period: # minutes
-            self.spray(self.valve_1, int(self.spraytime.period))
-            self.spray(self.valve_2, int(self.spraytime.period) + 2)
-            self.spray(self.valve_3, int(self.spraytime.period) + 4)
-            print("Spray Control finished!")
+            valves = [self.valve_1, self.valve_2, self.valve_3]
+            for valve, idx in enumerate(valves):
+                self.spray(valve, int(self.spraytime.period) + idx * 2, idx)
+            print("스프레이 자동화 종료됩니다.")
         else:
-            print("No time to spray!")
+            print("스프레이 자동화 작동될 시간이 아닙니다.")
         
 class EnvironmentManager(ManagerBase):
     def __init__(self, sensors: dict) -> None:

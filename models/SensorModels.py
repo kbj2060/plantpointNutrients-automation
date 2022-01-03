@@ -8,6 +8,8 @@ from config import CLOCKPIN, CSPIN, MISOPIN, MOSIPIN, WATERTANK_HEIGHT
 import time
 import itertools
 
+from utils import detect_outlier
+
 class SensorModel:
     def __init__(self, id: int, name: str, pin: int, createdAt: str) -> None:
         self.id = id
@@ -69,7 +71,6 @@ class WaterLevel(SensorModel):
         GPIO.setup(self.pin+1, GPIO.IN)
 
     def measure_waterlevel(self):
-        # try:
         GPIO.output(self.pin, GPIO.LOW)         
         time.sleep(0.5)
 
@@ -88,11 +89,14 @@ class WaterLevel(SensorModel):
         distance = round(distance, 2)
         return WATERTANK_HEIGHT - distance
 
-    @Halo(text='Measuring WaterLevel..', spinner='dots')
+    @Halo(text='수위측정 중입니다..', spinner='dots')
     def get_waterlevel(self):
         results = []
         for _ in itertools.repeat(None, 3):
             results.append(self.measure_waterlevel())
+        outliers = detect_outlier(results)
+        if outliers:
+            results = [item for item in results if item not in outliers]
         return sum(results)/len(results)
 
 class DHT22(SensorModel):
