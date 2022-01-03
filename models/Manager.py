@@ -97,25 +97,26 @@ class SprayManager(ManagerBase):
         self.spraytime = self._find_automation(name='spraytime')
         self.sprayterm = self._find_automation(name='sprayterm')
     
-    def spray(self, valve: Valve, operating_time: int, idx: int):
+    def spray(self, valve: Valve, operating_time: int):
+        floor = valve.name.split('_')[1]
         spinner = Halo()
-        spinner.info(text=f"{idx+1}층 스프레이 작동 중입니다..")
+        spinner.info(text=f"{floor}층 스프레이 작동 중입니다..")
         valve.on()
-        time.sleep(0.1)
+        time.sleep(0.2)
         self.waterpump_sprayer.on()
         time.sleep(operating_time)
         self.waterpump_sprayer.off()
-        time.sleep(0.1)
+        time.sleep(0.2)
         valve.off()
-        time.sleep(1)
+        time.sleep(0.2)
 
     def control(self):
         print("스프레이 자동화 시작합니다.")
         last_term = (datetime.now() - self.waterpump_sprayer.poweredAt).total_seconds()/60
         if last_term >= self.sprayterm.period: # minutes
-            valves = [self.valve_1, self.valve_2, self.valve_3]
-            for idx, valve in enumerate(valves):
-                self.spray(valve, int(self.spraytime.period) + idx * 2, idx)
+            self.spray(self.valve_1, int(self.spraytime.period))
+            self.spray(self.valve_2, int(self.spraytime.period) + 2)
+            self.spray(self.valve_3, int(self.spraytime.period) + 4)
             print("스프레이 자동화 종료됩니다.")
         else:
             print("스프레이 자동화 작동될 시간이 아닙니다.")
