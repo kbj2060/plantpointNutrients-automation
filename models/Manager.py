@@ -84,9 +84,11 @@ class SprayManager(ManagerBase):
     
     def spray(self, valve: Valve, operating_time: int):
         valve.on()
+        time.sleep(0.1)
         self.waterpump_sprayer.on()
         time.sleep(operating_time)
         self.waterpump_sprayer.off()
+        time.sleep(0.1)
         valve.off()
         time.sleep(1)
 
