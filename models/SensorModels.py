@@ -1,4 +1,5 @@
 import asyncio
+from halo import Halo
 import RPi.GPIO as GPIO
 import Adafruit_DHT as dht
 from api import post_humidity, post_temperature
@@ -30,6 +31,7 @@ class Current(SensorModel):
         self.mosipin = MOSIPIN
         self.misopin = MISOPIN
 
+    @Halo(text='Measuring Current..', spinner='dots')
     def get_current(self):
         if ((self.channel > 7) or (self.channel < 0)):
             return
@@ -66,6 +68,7 @@ class WaterLevel(SensorModel):
         GPIO.setup(self.pin, GPIO.OUT)
         GPIO.setup(self.pin+1, GPIO.IN)
 
+    @Halo(text='Measuring WaterLevel..', spinner='dots')
     def get_waterlevel(self):
         # try:
         GPIO.output(self.pin, GPIO.LOW)         
@@ -93,6 +96,7 @@ class DHT22(SensorModel):
     def __init__(self, id: int, name: str, pin: int, createdAt: str) -> None:
         super().__init__(id, name, pin, createdAt)
 
+    @Halo(text='Measuring Temperature and Humidity..', spinner='dots')
     def post_humidity_temperature(self):
         humidity, temperature = dht.read_retry(dht.DHT22, self.pin)
         if humidity is not None and temperature is not None:
