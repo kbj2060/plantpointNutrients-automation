@@ -94,8 +94,8 @@ class SprayManager(ManagerBase):
         self.wps_current = self._find_sensor(name='wps_current')
     
     def spray(self, valve: Valve, operating_time: int, idx: int):
-        spinner = Halo(text=f"{idx+1}층 스프레이 작동 중입니다..", spinner='dots')
-        spinner.start()
+        spinner = Halo()
+        spinner.info(text=f"{idx+1}층 스프레이 작동 중입니다..")
         valve.on()
         time.sleep(0.1)
         self.waterpump_sprayer.on()
@@ -104,7 +104,6 @@ class SprayManager(ManagerBase):
         time.sleep(0.1)
         valve.off()
         time.sleep(1)
-        spinner.stop_and_persist()
 
     def control(self):
         print("스프레이 자동화 시작합니다.")
