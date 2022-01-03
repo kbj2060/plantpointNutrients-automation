@@ -47,13 +47,6 @@ class Valve(SwitchBase):
     pass
 
 class WaterPump(SwitchBase):
-    def supply_water(self):
-        self.on()
-        while self.waterlevel.get_waterlevel() >= WATERTANK_HEIGHT * 0.9:
-            time.sleep(0.1)
-        self.off()
-        time.sleep(1)
-
     def supply_nutrient(self):
         # 20L 당 50ml
         velocity = 40 # ml/sec
