@@ -62,7 +62,7 @@ class WaterManager(ManagerBase):
         print("Water Tank finished!")
 
     def control(self):
-        print("Water Control started!")
+        print("양액 자동화 시스템 시작합니다.")
         waterlevel = self.waterlevel.get_waterlevel()
         print(f"WaterLevel is {waterlevel} cm")
         if waterlevel < 0 or waterlevel > WATERTANK_HEIGHT:
@@ -75,8 +75,8 @@ class WaterManager(ManagerBase):
             self.waterpump_b.supply_nutrient()
             self.water_tank(WATERTANK_HEIGHT * 0.95)
         else:
-            print("Water condition is good!")
-        print("Water Control finished!")
+            print("양액 시스템 상태 양호합니다.")
+        print("양액 자동화 시스템 종료합니다.")
 
 
 class SprayManager(ManagerBase):
