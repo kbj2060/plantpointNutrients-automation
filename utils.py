@@ -16,11 +16,11 @@ def sleep_with_text(waiting_time, text):
     spinner.stop_and_persist()
 
 def turn_on_log(text):
-    spinner = Halo(spinner='dots', color='green')
+    spinner = Halo(spinner='dots', text_color='green')
     spinner.succeed(text=text)
 
 def turn_off_log(text):
-    spinner = Halo(spinner='dots', color='red')
+    spinner = Halo(spinner='dots', text_color='red')
     spinner.succeed(text=text)
 
 def detect_outlier(arr):
