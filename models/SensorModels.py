@@ -34,7 +34,7 @@ class Current(SensorModel):
         self.misopin = MISOPIN
 
     @Halo(text='Measuring Current..', spinner='dots')
-    def get_current(self):
+    def measure_current(self):
         if ((self.channel > 7) or (self.channel < 0)):
             return
         GPIO.output(self.cspin, True)      # CS핀을 high로 만든다.
@@ -62,6 +62,14 @@ class Current(SensorModel):
         adcout <<= 1       # first bit is 'null' so drop it
         return adcout
 
+    def get_current(self):
+        results = []
+        for _ in itertools.repeat(None, 3):
+            results.append(self.measure_current())
+        outliers = detect_outlier(results)
+        if outliers:
+            results = [item for item in results if item not in outliers]
+        return sum(results)/len(results)
 
 class WaterLevel(SensorModel):
     def __init__(self, id: int, name: str, pin: int, createdAt: str) -> None:

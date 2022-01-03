@@ -86,12 +86,16 @@ class SprayManager(ManagerBase):
         self.valve_2 = self._find_switch(name='valve_2')
         self.valve_3 = self._find_switch(name='valve_3')
         self.waterpump_sprayer = self._find_switch(name='waterpump_sprayer')
-        self.spraytime = self._find_automation(name='spraytime')
-        self.sprayterm = self._find_automation(name='sprayterm')
         self.v1_current = self._find_sensor(name='v1_current')
         self.v2_current = self._find_sensor(name='v2_current')
         self.v3_current = self._find_sensor(name='v3_current')
         self.wps_current = self._find_sensor(name='wps_current')
+        self.valve_1.set_current(self.v1_current)
+        self.valve_2.set_current(self.v2_current)
+        self.valve_3.set_current(self.v3_current)
+        self.waterpump_sprayer.set_current(self.wps_current)
+        self.spraytime = self._find_automation(name='spraytime')
+        self.sprayterm = self._find_automation(name='sprayterm')
     
     def spray(self, valve: Valve, operating_time: int, idx: int):
         spinner = Halo()
