@@ -2,9 +2,11 @@ from datetime import datetime
 from api import post_report
 from config import WATERTANK_HEIGHT
 from models.SensorModels import DHT22
+from models.SwitchModels import Valve
+from halo import Halo
 import time
 
-from models.SwitchModels import Valve
+from utils import sleep_with_text
 
 
 class ManagerBase:
@@ -86,7 +88,7 @@ class SprayManager(ManagerBase):
         valve.on()
         time.sleep(0.1)
         self.waterpump_sprayer.on()
-        time.sleep(operating_time)
+        sleep_with_text(time=operating_time, text=f"Spraying..")
         self.waterpump_sprayer.off()
         time.sleep(0.1)
         valve.off()
@@ -95,10 +97,14 @@ class SprayManager(ManagerBase):
     def control(self):
         last_term = (datetime.now() - self.waterpump_sprayer.poweredAt).total_seconds()/60
         if last_term >= self.sprayterm.period: # minutes
+            spinner = Halo(text="WaterSpray Automation Started!", spinner='dots')
+            spinner.start()
             self.spray(self.valve_1, int(self.spraytime.period))
             self.spray(self.valve_2, int(self.spraytime.period) + 2)
             self.spray(self.valve_3, int(self.spraytime.period) + 4)
-        
+            spinner.stop()
+        else:
+            print("No time to spray!")
             
 class EnvironmentManager(ManagerBase):
     def __init__(self, sensors: dict) -> None:

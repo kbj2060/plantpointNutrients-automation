@@ -99,6 +99,7 @@ class DHT22(SensorModel):
     @Halo(text='Measuring Temperature and Humidity..', spinner='dots')
     def post_humidity_temperature(self):
         humidity, temperature = dht.read_retry(dht.DHT22, self.pin)
+        print(f"Temperature : {temperature} / Humidity : {humidity}")
         if humidity is not None and temperature is not None:
             asyncio.run(post_temperature(temperature))
             asyncio.run(post_humidity(humidity))
