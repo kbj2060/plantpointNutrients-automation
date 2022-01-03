@@ -78,9 +78,9 @@ class Current(SensorModel):
         volts = round(volts, places)
         return volts
 
-    def get_current(self):
+    def get_current(self, val_num=3):
         results = []
-        for _ in itertools.repeat(None, 3):
+        for _ in itertools.repeat(None, val_num):
             results.append(self.measure_current())
         outliers = detect_outlier(results)
         if outliers:
