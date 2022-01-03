@@ -40,8 +40,8 @@ class Current(SensorModel):
         GPIO.output(self.cspin, True)      # CS핀을 high로 만든다.
         GPIO.output(self.clockpin, False)  # clock핀을 low로 만든다. 시작한다.
         GPIO.output(self.cspin, False)     # CS핀을 low로 만든다.
-        spi = spidev.SpiDev()
-        spi.open(0, 0)
+        self.spi = spidev.SpiDev()
+        self.spi.open(0, 0)
         current_level = self.ReadChannel(self.channel)
         current_volts = self.ConvertVolts(current_level, 2)
         return current_volts
@@ -68,10 +68,9 @@ class Current(SensorModel):
         # return adcout
 
     def ReadChannel(self, channel):
-        spi = spidev.SpiDev()
         if channel > 7 or channel < 0:
             return -1
-        adc = spi.xfer2([1, (8 + channel) << 4, 0])
+        adc = self.spi.xfer2([1, (8 + channel) << 4, 0])
         data = ((adc[1] & 3) << 8) + adc[2]
         return data
 
