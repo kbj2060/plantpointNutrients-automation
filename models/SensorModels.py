@@ -6,7 +6,7 @@ from api import post_humidity, post_temperature
 import spidev
 from config import CLOCKPIN, CSPIN, MISOPIN, MOSIPIN, WATERTANK_HEIGHT
 import time
-
+import itertools
 
 class SensorModel:
     def __init__(self, id: int, name: str, pin: int, createdAt: str) -> None:
@@ -69,7 +69,7 @@ class WaterLevel(SensorModel):
         GPIO.setup(self.pin+1, GPIO.IN)
 
     @Halo(text='Measuring WaterLevel..', spinner='dots')
-    def get_waterlevel(self):
+    def _get_waterlevel(self):
         # try:
         GPIO.output(self.pin, GPIO.LOW)         
         time.sleep(0.5)
@@ -89,9 +89,12 @@ class WaterLevel(SensorModel):
         distance = round(distance, 2)
         print(f"WaterLevel: {distance}")
         return WATERTANK_HEIGHT - distance
-        # except:
-        #     
-
+    
+    def get_waterlevel(self):
+        results = []
+        for _ in itertools.repeat(None, 3):
+            results.append(self._get_waterlevel())
+        return sum(results)/len(results)
 class DHT22(SensorModel):
     def __init__(self, id: int, name: str, pin: int, createdAt: str) -> None:
         super().__init__(id, name, pin, createdAt)
