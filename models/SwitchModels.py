@@ -1,3 +1,4 @@
+import asyncio
 import RPi.GPIO as GPIO
 from abc import ABCMeta
 from api import post_switch
@@ -26,12 +27,12 @@ class SwitchBase(metaclass=ABCMeta):
     def on(self):
         GPIO.output(self.pin, GPIO.LOW)
         time.sleep(0.5)
-        post_switch(name=self.name, machine_id=self.id, status=1, controlledBy='auto')
+        asyncio.run(post_switch(name=self.name, machine_id=self.id, status=1, controlledBy='auto'))
 
     def off(self):
         GPIO.output(self.pin, GPIO.HIGH)
         time.sleep(0.5)
-        post_switch(name=self.name, machine_id=self.id, status=0, controlledBy='auto')
+        asyncio.run(post_switch(name=self.name, machine_id=self.id, status=0, controlledBy='auto'))
 
     def pprint(self):
         print({

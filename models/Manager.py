@@ -14,13 +14,13 @@ class ManagerBase:
         self.sensors = sensors
 
     def _find_switch(self, name):
-        return self.switches[name]()
+        return self.switches[name]
 
     def _find_automation(self, name):
-        return self.automations[name]()
+        return self.automations[name]
 
     def _find_sensor(self, name):
-        return self.sensors[name]()
+        return self.sensors[name]
 
 
 class WaterManager(ManagerBase):
@@ -91,11 +91,11 @@ class SprayManager(ManagerBase):
         time.sleep(1)
 
     def control(self):
-        last_term = datetime.now() - datetime.strptime(self.waterpump_sprayer.poweredAt, '%Y-%m-%d %H:%M:%S')
-        if last_term.minute >= self.sprayterm: # minutes
-            self.spray(self.valve_1, int(self.spraytime))
-            self.spray(self.valve_2, int(self.spraytime) + 2)
-            self.spray(self.valve_3, int(self.spraytime) + 4)
+        last_term = (datetime.now() - self.waterpump_sprayer.poweredAt).total_seconds()/60
+        if last_term >= self.sprayterm.period: # minutes
+            self.spray(self.valve_1, int(self.spraytime.period))
+            self.spray(self.valve_2, int(self.spraytime.period) + 2)
+            self.spray(self.valve_3, int(self.spraytime.period) + 4)
         
             
 class EnvironmentManager(ManagerBase):

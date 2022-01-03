@@ -1,6 +1,6 @@
 SECTION = 's1/d1'
-# ADDRESS = 'http://192.168.0.7:8000'
-ADDRESS = 'http://127.0.0.1:8000'
+ADDRESS = 'http://192.168.0.7:8000'
+#ADDRESS = 'http://127.0.0.1:8000'
 
 UNITS = {
     'nutrientsupply': 'mL',
