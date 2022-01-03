@@ -23,25 +23,23 @@ class SensorModel:
 class Current(SensorModel):
     def __init__(self, id: int, name: str, pin: int, createdAt: str) -> None:
         super().__init__(id, name, pin, createdAt)
-        GPIO.setup(MOSIPIN, GPIO.OUT)
-        GPIO.setup(MISOPIN, GPIO.IN)
-        GPIO.setup(CLOCKPIN, GPIO.OUT)
-        GPIO.setup(CSPIN, GPIO.OUT)
+        # GPIO.setup(MOSIPIN, GPIO.OUT)
+        # GPIO.setup(MISOPIN, GPIO.IN)
+        # GPIO.setup(CLOCKPIN, GPIO.OUT)
+        # GPIO.setup(CSPIN, GPIO.OUT)
         self.channel = pin
-        self.cspin = CSPIN
-        self.clockpin = CLOCKPIN
-        self.mosipin = MOSIPIN
-        self.misopin = MISOPIN
+        # self.cspin = CSPIN
+        # self.clockpin = CLOCKPIN
+        # self.mosipin = MOSIPIN
+        # self.misopin = MISOPIN
+        self.spi = spidev.SpiDev()
+        self.spi.open(0, 0)
 
     @Halo(text='Measuring Current..', spinner='dots')
     def measure_current(self):
-        if ((self.channel > 7) or (self.channel < 0)):
-            return
-        GPIO.output(self.cspin, True)      # CS핀을 high로 만든다.
-        GPIO.output(self.clockpin, False)  # clock핀을 low로 만든다. 시작한다.
-        GPIO.output(self.cspin, False)     # CS핀을 low로 만든다.
-        self.spi = spidev.SpiDev()
-        self.spi.open(0, 0)
+        # GPIO.output(self.cspin, True)      # CS핀을 high로 만든다.
+        # GPIO.output(self.clockpin, False)  # clock핀을 low로 만든다. 시작한다.
+        # GPIO.output(self.cspin, False)     # CS핀을 low로 만든다.
         current_level = self.ReadChannel(self.channel)
         current_volts = self.ConvertVolts(current_level, 2)
         return current_volts

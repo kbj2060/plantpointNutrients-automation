@@ -25,12 +25,12 @@ def turn_off_log(text):
 
 def detect_outlier(arr):
     outliers=[]
-    threshold=3
+    threshold=1
     mean_1 = np.mean(arr)
     std_1 =np.std(arr)
-
+    if std_1 is 0: return arr
     for y in arr:
-        z_score= (y - mean_1)/std_1 
+        z_score = (y - mean_1) / std_1
         if np.abs(z_score) > threshold:
             outliers.append(y)
     return outliers
