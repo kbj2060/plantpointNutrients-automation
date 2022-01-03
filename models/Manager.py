@@ -6,7 +6,7 @@ from models.SwitchModels import Valve
 from halo import Halo
 import time
 
-from utils import sleep_with_text
+from utils import sleep_with_log
 
 
 class ManagerBase:

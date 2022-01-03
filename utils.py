@@ -9,8 +9,8 @@ def fDBDate(date: str):
 def get_arr_diffs(a, b):
     return list(set(a) - set(b))
 
-def sleep_with_text(waiting_time, text):
-    spinner = Halo(text=text, spinner='dots')
+def sleep_with_log(waiting_time, text):
+    spinner = Halo(text=text, spinner='dots', text_color='yellow')
     spinner.start()
     time.sleep(waiting_time)
     spinner.stop_and_persist()
