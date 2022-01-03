@@ -36,7 +36,7 @@ class SwitchBase(metaclass=ABCMeta):
         time.sleep(0.5)
         current = self.get_current()
         if current == 0:
-            asyncio.run(post_report(lv=3, problem="전류 인가 에러"))
+            asyncio.run(post_report(lv=3, problem=f"{self.get_name()} 전류 인가 에러"))
         turn_on_log(text=f"{self.get_name()} 켜졌습니다.")
         asyncio.run(post_switch(name=self.name, machine_id=self.id, status=1, controlledBy='auto'))
 
@@ -45,7 +45,7 @@ class SwitchBase(metaclass=ABCMeta):
         time.sleep(0.5)
         current = self.get_current()
         if current != 0:
-            asyncio.run(post_report(lv=3, problem="전류 인가 에러"))
+            asyncio.run(post_report(lv=3, problem=f"{self.get_name()} 전류 인가 에러"))
         turn_off_log(text=f"{self.get_name()} 꺼졌습니다.")
         asyncio.run(post_switch(name=self.name, machine_id=self.id, status=0, controlledBy='auto'))
 
