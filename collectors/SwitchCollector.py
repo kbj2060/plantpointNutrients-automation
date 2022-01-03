@@ -1,10 +1,10 @@
 import asyncio
 from api import get_last_switches, get_machines, post_switch
 from collectors.CollectorBase import CollectorBase
-from models.SwitchModels import SwitchBase
-from config import MACHINES_MODELS
+from models.SwitchModels import SwitchBase, Valve, WaterPump, LED
 from utils import get_arr_diffs
 
+MACHINES_MODELS = [Valve, WaterPump, LED]
 
 class SwitchCollector(CollectorBase):
     def _classify_machine_model(self, switches: dict, machines: dict) -> SwitchBase:

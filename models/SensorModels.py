@@ -1,10 +1,12 @@
+import asyncio
+from halo import Halo
 import RPi.GPIO as GPIO
 import Adafruit_DHT as dht
 from api import post_humidity, post_temperature
 import spidev
 from config import CLOCKPIN, CSPIN, MISOPIN, MOSIPIN, WATERTANK_HEIGHT
 import time
-
+import itertools
 
 class SensorModel:
     def __init__(self, id: int, name: str, pin: int, createdAt: str) -> None:
@@ -29,6 +31,7 @@ class Current(SensorModel):
         self.mosipin = MOSIPIN
         self.misopin = MISOPIN
 
+    @Halo(text='Measuring Current..', spinner='dots')
     def get_current(self):
         if ((self.channel > 7) or (self.channel < 0)):
             return
@@ -62,37 +65,44 @@ class WaterLevel(SensorModel):
     def __init__(self, id: int, name: str, pin: int, createdAt: str) -> None:
         super().__init__(id, name, pin, createdAt)
         GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self.sensor.pin, GPIO.OUT)
-        GPIO.setup(self.sensor.pin+1, GPIO.IN)
+        GPIO.setup(self.pin, GPIO.OUT)
+        GPIO.setup(self.pin+1, GPIO.IN)
 
-    def get_waterlevel(self):
+    def measure_waterlevel(self):
         # try:
-        GPIO.output(self.sensor.pin, False)         
+        GPIO.output(self.pin, GPIO.LOW)         
         time.sleep(0.5)
 
-        GPIO.output(self.sensor.pin, True)
+        GPIO.output(self.pin, GPIO.HIGH)
         time.sleep(0.00001)
-        GPIO.output(self.sensor.pin, False)
+        GPIO.output(self.pin, GPIO.LOW)
 
-        while GPIO.input(self.sensor.pin+1) == 0:
+        while GPIO.input(self.pin+1) == 0:
             start = time.time()
 
-        while GPIO.input(self.sensor.pin+1) == 1:
+        while GPIO.input(self.pin+1) == 1:
             stop = time.time()
 
         time_interval = stop - start      
         distance = time_interval * 17000
         distance = round(distance, 2)
         return WATERTANK_HEIGHT - distance
-        # except:
-        #     
+
+    @Halo(text='Measuring WaterLevel..', spinner='dots')
+    def get_waterlevel(self):
+        results = []
+        for _ in itertools.repeat(None, 3):
+            results.append(self.measure_waterlevel())
+        return sum(results)/len(results)
 
 class DHT22(SensorModel):
     def __init__(self, id: int, name: str, pin: int, createdAt: str) -> None:
         super().__init__(id, name, pin, createdAt)
 
+    @Halo(text='Measuring Temperature and Humidity..', spinner='dots')
     def post_humidity_temperature(self):
         humidity, temperature = dht.read_retry(dht.DHT22, self.pin)
+        print(f"Temperature : {temperature} / Humidity : {humidity}")
         if humidity is not None and temperature is not None:
-            post_temperature(temperature)
-            post_humidity(humidity)
+            asyncio.run(post_temperature(temperature))
+            asyncio.run(post_humidity(humidity))

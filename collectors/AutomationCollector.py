@@ -1,10 +1,11 @@
 
 import asyncio
-from api import get_last_automations, post_report
+from api import get_last_automations
 from collectors.CollectorBase import CollectorBase
-from config import AUTOMATION_MODELS, AUTOMATION_SUBJECTS
-from models.AutomationModels import AutomationBase
+from models.AutomationModels import AutomationBase, SprayTerm, SprayTime, WaterSupply, NutrientSupply
 
+AUTOMATION_SUBJECTS = ['nutrientsupply', 'spraytime', 'sprayterm', 'watersupply']
+AUTOMATION_MODELS = [SprayTerm, SprayTime, WaterSupply, NutrientSupply]
 
 class AutomationCollector(CollectorBase):
     def _classify_automation_model(self, automations: list) -> AutomationBase:

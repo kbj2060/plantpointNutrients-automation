@@ -1,8 +1,9 @@
+import asyncio
 import RPi.GPIO as GPIO
 from abc import ABCMeta
 from api import post_switch
 from config import NUTRIENT_AMOUNT, WATERTANK_HEIGHT
-from utils import fDBDate
+from utils import fDBDate, sleep_with_text
 import time
 
 class SwitchBase(metaclass=ABCMeta):
@@ -25,13 +26,13 @@ class SwitchBase(metaclass=ABCMeta):
 
     def on(self):
         GPIO.output(self.pin, GPIO.LOW)
-        time.sleep(0.5)
-        post_switch(name=self.name, machine_id=self.id, status=1, controlledBy='auto')
+        sleep_with_text(waiting_time=0.5, text=f"{self.get_name()} turned on.")
+        asyncio.run(post_switch(name=self.name, machine_id=self.id, status=1, controlledBy='auto'))
 
     def off(self):
         GPIO.output(self.pin, GPIO.HIGH)
-        time.sleep(0.5)
-        post_switch(name=self.name, machine_id=self.id, status=0, controlledBy='auto')
+        sleep_with_text(waiting_time=0.5, text=f"{self.get_name()} turned off.")
+        asyncio.run(post_switch(name=self.name, machine_id=self.id, status=0, controlledBy='auto'))
 
     def pprint(self):
         print({
@@ -52,9 +53,9 @@ class WaterPump(SwitchBase):
         velocity = 40 # ml/sec
         operating_time = NUTRIENT_AMOUNT / velocity
         self.on()
-        time.sleep(operating_time)
+        sleep_with_text(waiting_time=operating_time, text=f"Nutrient supplying {operating_time}sec..")
         self.off()
-        time.sleep(1)
+        time.sleep(0.5)
 
 
 class LED(SwitchBase):
