@@ -40,6 +40,7 @@ class SwitchBase(metaclass=ABCMeta):
 
     def off(self):
         GPIO.output(self.pin, GPIO.HIGH)
+        print(self.get_current())
         turn_off_log(text=f"{self.get_name()} 꺼졌습니다.")
         time.sleep(0.5)
         asyncio.run(post_switch(name=self.name, machine_id=self.id, status=0, controlledBy='auto'))
