@@ -6,8 +6,6 @@ from models.SwitchModels import Valve
 from halo import Halo
 import time
 
-from utils import sleep_with_log
-
 
 class ManagerBase:
     def __init__(self, switches: dict, automations: dict, sensors: dict) -> None:

@@ -3,7 +3,7 @@ import RPi.GPIO as GPIO
 from abc import ABCMeta
 from api import post_switch
 from config import NUTRIENT_AMOUNT
-from utils import fDBDate, sleep_with_log, turn_off_log, turn_on_log
+from utils import fDBDate, turn_off_log, turn_on_log
 import time
 
 class SwitchBase(metaclass=ABCMeta):
@@ -51,11 +51,11 @@ class Valve(SwitchBase):
 
 class WaterPump(SwitchBase):
     def supply_nutrient(self):
-        # 20L 당 50ml
+        # 20L 당 50ml 양액
         velocity = 40 # ml/sec
         operating_time = NUTRIENT_AMOUNT / velocity
         self.on()
-        sleep_with_log(waiting_time=operating_time, text=f"{operating_time}초간 양액 주입 중입니다.")
+        time.sleep(operating_time)
         self.off()
         time.sleep(0.5)
 
