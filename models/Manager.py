@@ -64,6 +64,7 @@ class WaterManager(ManagerBase):
     def control(self):
         print("Water Control started!")
         waterlevel = self.waterlevel.get_waterlevel()
+        print(f"WaterLevel is {waterlevel} cm")
         if waterlevel < 0 or waterlevel > WATERTANK_HEIGHT:
             post_report(lv=3, problem="수위센서측정에 문제가 생겼습니다.")
             raise Exception('수위센서측정에 문제가 생겼습니다.')
