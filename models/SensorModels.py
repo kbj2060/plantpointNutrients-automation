@@ -68,7 +68,6 @@ class WaterLevel(SensorModel):
         GPIO.setup(self.pin, GPIO.OUT)
         GPIO.setup(self.pin+1, GPIO.IN)
 
-    @Halo(text='Measuring WaterLevel..', spinner='dots')
     def _get_waterlevel(self):
         # try:
         GPIO.output(self.pin, GPIO.LOW)         
@@ -89,12 +88,14 @@ class WaterLevel(SensorModel):
         distance = round(distance, 2)
         print(f"WaterLevel: {distance}")
         return WATERTANK_HEIGHT - distance
-    
+        
+    @Halo(text='Measuring WaterLevel..', spinner='dots')
     def get_waterlevel(self):
         results = []
         for _ in itertools.repeat(None, 3):
             results.append(self._get_waterlevel())
         return sum(results)/len(results)
+
 class DHT22(SensorModel):
     def __init__(self, id: int, name: str, pin: int, createdAt: str) -> None:
         super().__init__(id, name, pin, createdAt)
