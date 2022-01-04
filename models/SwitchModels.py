@@ -8,7 +8,6 @@ import time
 
 class SwitchBase(metaclass=ABCMeta):
     def __init__(self, id: int, pin:int, name: str, createdAt: str) -> None:
-        GPIO.setmode(GPIO.BCM)
         GPIO.setup(pin, GPIO.OUT, initial=GPIO.LOW)
         self.id = id
         self.name = name
