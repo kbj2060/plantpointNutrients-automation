@@ -23,6 +23,7 @@ class SensorModel:
 class Current(SensorModel):
     def __init__(self, id: int, name: str, pin: int, createdAt: str) -> None:
         super().__init__(id, name, pin, createdAt)
+        GPIO.setmode(GPIO.BCM)
         GPIO.setup(MOSIPIN, GPIO.OUT)
         GPIO.setup(MISOPIN, GPIO.IN)
         GPIO.setup(CLOCKPIN, GPIO.OUT)
