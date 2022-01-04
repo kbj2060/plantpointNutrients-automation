@@ -11,7 +11,6 @@ class SensorCollector(CollectorBase):
         results = {}
         for sensor in sensors:
             found_automation_model = next(model for model in SENSOR_MODELS if model.get_name() in sensor['name'])
-            print(sensor)
             results[sensor['name']] = found_automation_model(**sensor)
         return results
 
