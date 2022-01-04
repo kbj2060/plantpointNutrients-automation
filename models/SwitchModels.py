@@ -3,7 +3,6 @@ import RPi.GPIO as GPIO
 from abc import ABCMeta
 from api import post_report, post_switch
 from config import NUTRIENT_AMOUNT
-from models.SensorModels import Current
 from utils import fDBDate, turn_off_log, turn_on_log
 import time
 
@@ -21,11 +20,11 @@ class SwitchBase(metaclass=ABCMeta):
     def get_name(cls):
         return cls.__name__.lower()
 
-    def set_current(self, current: Current):
-        self.current = current
+    # def set_current(self, current):
+    #     self.current = current
 
-    def get_current(self):
-        return self.current.get_current()
+    # def get_current(self):
+    #     return self.current.get_current()
 
     def set_switch_info(self, status, poweredAt):
         self.poweredAt = fDBDate(poweredAt)
