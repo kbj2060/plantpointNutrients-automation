@@ -2,9 +2,12 @@ from collectors.SensorCollector import SensorCollector
 from models.Manager import EnvironmentManager, WaterManager, SprayManager
 from collectors.AutomationCollector import AutomationCollector
 from collectors.SwitchCollector import SwitchCollector
+from datetime import datetime
 import RPi.GPIO as GPIO
 
 if __name__ == "__main__":
+    print(f"DATE: {datetime.now()}")
+    print("양액 자동화 시스템 시작합니다.")
     automation_models = AutomationCollector().get()
     switch_models = SwitchCollector().get()
     sensor_models = SensorCollector().get()

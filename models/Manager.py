@@ -62,7 +62,6 @@ class WaterManager(ManagerBase):
         spinner.info('물탱크 채우기 종료합니다.')
 
     def control(self):
-        print("양액 자동화 시스템 시작합니다.")
         waterlevel = self.waterlevel.get_waterlevel()
         print(f"수위는 {waterlevel} cm 입니다.")
         if waterlevel < 0 or waterlevel > WATERTANK_HEIGHT:
