@@ -10,7 +10,7 @@ import time
 class SwitchBase(metaclass=ABCMeta):
     def __init__(self, id: int, pin:int, name: str, createdAt: str) -> None:
         GPIO.setmode(GPIO.BCM)
-        GPIO.setup(pin, GPIO.OUT)
+        GPIO.setup(pin, GPIO.OUT, initial=GPIO.HIGH)
         self.id = id
         self.name = name
         self.pin = pin
@@ -32,7 +32,7 @@ class SwitchBase(metaclass=ABCMeta):
         self.status = status
 
     def on(self):
-        GPIO.output(self.pin, GPIO.LOW)
+        GPIO.output(self.pin, GPIO.HIGH)
         time.sleep(0.5)
         current = self.get_current()
         if current == 0:
@@ -41,7 +41,7 @@ class SwitchBase(metaclass=ABCMeta):
         asyncio.run(post_switch(name=self.name, machine_id=self.id, status=1, controlledBy='auto'))
 
     def off(self):
-        GPIO.output(self.pin, GPIO.HIGH)
+        GPIO.output(self.pin, GPIO.LOW)
         time.sleep(0.5)
         current = self.get_current()
         if current != 0:
