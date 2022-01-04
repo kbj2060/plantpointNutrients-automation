@@ -10,7 +10,7 @@ import time
 class SwitchBase(metaclass=ABCMeta):
     def __init__(self, id: int, pin:int, name: str, createdAt: str) -> None:
         GPIO.setmode(GPIO.BCM)
-        GPIO.setup(pin, GPIO.OUT)
+        GPIO.setup(pin, GPIO.OUT, initial=GPIO.LOW)
         self.id = id
         self.name = name
         self.pin = pin
@@ -32,20 +32,20 @@ class SwitchBase(metaclass=ABCMeta):
         self.status = status
 
     def on(self):
-        GPIO.output(self.pin, GPIO.LOW)
+        GPIO.output(self.pin, GPIO.HIGH)
         time.sleep(0.5)
-        current = self.get_current()
-        if current == 0:
-            asyncio.run(post_report(lv=3, problem=f"{self.name} 전류 인가 에러"))
+        # current = self.get_current()
+        # if current == 0:
+        #     asyncio.run(post_report(lv=3, problem=f"{self.name} 전류 인가 에러"))
         turn_on_log(text=f"{self.name} 켜졌습니다.")
         asyncio.run(post_switch(name=self.name, machine_id=self.id, status=1, controlledBy='auto'))
 
     def off(self):
-        GPIO.output(self.pin, GPIO.HIGH)
+        GPIO.output(self.pin, GPIO.LOW)
         time.sleep(0.5)
-        current = self.get_current()
-        if current != 0:
-            asyncio.run(post_report(lv=3, problem=f"{self.name} 전류 인가 에러"))
+        # current = self.get_current()
+        # if current != 0:
+        #     asyncio.run(post_report(lv=3, problem=f"{self.name} 전류 인가 에러"))
         turn_off_log(text=f"{self.name} 꺼졌습니다.")
         asyncio.run(post_switch(name=self.name, machine_id=self.id, status=0, controlledBy='auto'))
 

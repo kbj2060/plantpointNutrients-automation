@@ -34,10 +34,6 @@ class WaterManager(ManagerBase):
         self.watersupply = self._find_automation(name='watersupply')
         self.nutrientsupply = self._find_automation(name='nutrientsupply')
         self.waterlevel = self._find_sensor(name='waterlevel')
-        self.vi_current = self._find_sensor(name='vi_current')
-        self.vo_current = self._find_sensor(name='vo_current')
-        self.wpa_current = self._find_sensor(name='wpa_current')
-        self.wpb_current = self._find_sensor(name='wpb_current')
 
     def empty_tank(self):
         spinner = Halo()
@@ -86,14 +82,6 @@ class SprayManager(ManagerBase):
         self.valve_2 = self._find_switch(name='valve_2')
         self.valve_3 = self._find_switch(name='valve_3')
         self.waterpump_sprayer = self._find_switch(name='waterpump_sprayer')
-        self.v1_current = self._find_sensor(name='v1_current')
-        self.v2_current = self._find_sensor(name='v2_current')
-        self.v3_current = self._find_sensor(name='v3_current')
-        self.wps_current = self._find_sensor(name='wps_current')
-        self.valve_1.set_current(self.v1_current)
-        self.valve_2.set_current(self.v2_current)
-        self.valve_3.set_current(self.v3_current)
-        self.waterpump_sprayer.set_current(self.wps_current)
         self.spraytime = self._find_automation(name='spraytime')
         self.sprayterm = self._find_automation(name='sprayterm')
     
