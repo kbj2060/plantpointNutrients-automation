@@ -6,6 +6,7 @@ from datetime import datetime
 import RPi.GPIO as GPIO
 
 if __name__ == "__main__":
+    GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
     print(f"DATE: {datetime.now()}")
     print("양액 자동화 시스템 시작합니다.")
