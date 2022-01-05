@@ -39,9 +39,9 @@ class WaterManager(ManagerBase):
         spinner = Halo()
         spinner.info('물탱크 비우기 시작합니다.')
         self.valve_out.on()
-        while self.waterlevel.get_waterlevel() >= 3: # 1cm
+        while self.waterlevel.get_waterlevel() >= WATERTANK_HEIGHT * 0.07: # 3cm
             waterlevel = self.waterlevel.get_waterlevel()
-            print(f"Waterlevel is now {waterlevel}cm")
+            print(f"현재 수위는 {waterlevel}cm 입니다.")
             time.sleep(1)
         self.valve_out.off()
         time.sleep(1)
@@ -54,7 +54,7 @@ class WaterManager(ManagerBase):
         self.waterpump_center.on()
         while self.waterlevel.get_waterlevel() >= height:
             waterlevel = self.waterlevel.get_waterlevel()
-            print(f"Waterlevel is now {waterlevel}cm")
+            print(f"현재 수위는 {waterlevel}cm 입니다.")
             time.sleep(1)
         self.waterpump_center.off()
         self.valve_in.off()
@@ -67,7 +67,7 @@ class WaterManager(ManagerBase):
         if waterlevel < 0 or waterlevel > WATERTANK_HEIGHT:
             post_report(lv=3, problem="수위센서측정에 문제가 생겼습니다.")
             raise Exception('수위센서측정에 문제가 생겼습니다.')
-        elif waterlevel <= WATERTANK_HEIGHT * 0.05:
+        elif waterlevel <= WATERTANK_HEIGHT * 0.1:
             self.empty_tank()
             self.waterpump_a.supply_nutrient()
             self.water_tank(WATERTANK_HEIGHT//2)
