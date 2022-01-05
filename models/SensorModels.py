@@ -114,7 +114,7 @@ class WaterLevel(SensorModel):
 
     def get_waterlevel(self):
         results = []
-        for _ in itertools.repeat(None, 3):
+        for _ in itertools.repeat(None, 5):
             results.append(self.measure_waterlevel())
         outliers = detect_outlier(results)
         if outliers:
