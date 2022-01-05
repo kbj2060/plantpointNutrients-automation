@@ -39,7 +39,7 @@ class WaterManager(ManagerBase):
         spinner = Halo()
         spinner.info('물탱크 비우기 시작합니다.')
         self.valve_out.on()
-        while self.waterlevel.get_waterlevel() <= 1: # 1cm
+        while self.waterlevel.get_waterlevel() >= 3: # 1cm
             waterlevel = self.waterlevel.get_waterlevel()
             print(f"Waterlevel is now {waterlevel}cm")
             time.sleep(1)

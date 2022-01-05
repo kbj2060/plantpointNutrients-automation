@@ -73,7 +73,6 @@ class Current(SensorModel):
     #     return data
 
     # def ConvertVolts(self, data, places):
-    #     #return .0264 * data - 13.51
     #     volts = (data * 3.3) / float(1023)
     #     volts = round(volts, places)
     #     return volts
