@@ -23,7 +23,6 @@ class SensorModel:
 class Current(SensorModel):
     def __init__(self, id: int, name: str, pin: int, createdAt: str) -> None:
         super().__init__(id, name, pin, createdAt)
-        GPIO.setmode(GPIO.BCM)
         GPIO.setup(MOSIPIN, GPIO.OUT)
         GPIO.setup(MISOPIN, GPIO.IN)
         GPIO.setup(CLOCKPIN, GPIO.OUT)
@@ -91,7 +90,6 @@ class Current(SensorModel):
 class WaterLevel(SensorModel):
     def __init__(self, id: int, name: str, pin: int, createdAt: str) -> None:
         super().__init__(id, name, pin, createdAt)
-        GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.pin, GPIO.OUT)
         GPIO.setup(self.pin+1, GPIO.IN)
 
