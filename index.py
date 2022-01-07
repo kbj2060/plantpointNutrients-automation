@@ -1,3 +1,4 @@
+import asyncio
 from api import get_last_automation_date, post_automation_history
 from collectors.SensorCollector import SensorCollector
 from models.Manager import EnvironmentManager, ManagerBase, WaterManager, SprayManager
@@ -25,16 +26,16 @@ if __name__ == "__main__":
         wm = WaterManager(switch_models, automation_models, sensor_models)
         wm.control()
         end = datetime.now()
-        post_automation_history(subject='watersupply', start=start, end=end, success=True)
+        asyncio.run(post_automation_history(subject='watersupply', start=start, end=end, success=True))
 
         start = datetime.now()
         sm = SprayManager(switch_models, automation_models, sensor_models)
         sm.control(last_spray_activated)
         end = datetime.now()
-        post_automation_history(subject='spray', start=start, end=end, success=True)
+        asyncio.run(post_automation_history(subject='spray', start=start, end=end, success=True))
         
     except:
         now = datetime.now()
-        post_automation_history(subject='spray', start=now, end=now, success=False)
+        asyncio.run(post_automation_history(subject='spray', start=now, end=now, success=False))
     finally:
         GPIO.cleanup()
