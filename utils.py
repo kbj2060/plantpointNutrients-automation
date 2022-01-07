@@ -39,4 +39,4 @@ def DB_date(date: datetime):
     return date.strftime('%Y-%m-%d %H:%M:%S')
 
 def str2datetime(date):
-    return date.strptime('%Y-%m-%d %H:%M:%S')
+    return datetime.strptime(date, '%Y-%m-%dT%H:%M:%S')

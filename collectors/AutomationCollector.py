@@ -25,7 +25,7 @@ class AutomationCollector(CollectorBase):
             
     def get_spray_last_activated(self, subject):
         res = asyncio.run(get_last_automation_date(subject))
-        if not res or len(res) == 0:
+        if res is None or len(res) == 0:
             asyncio.run(
                 post_automation_history(
                     subject=subject, 
@@ -35,6 +35,7 @@ class AutomationCollector(CollectorBase):
                     )
                 )
             asyncio.run(post_report(lv=2, problem='자동화 데이터가 존재하지 않아 이전 데이터를 불러올 수 없습니다.'))
+            return DB_date("1990-01-01T00:00:00")
         return res['start']
         
     def get(self):
