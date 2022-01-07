@@ -35,6 +35,6 @@ if __name__ == "__main__":
         
     except:
         now = datetime.now()
-        post_automation_history(subject='spray', start=now, end=now, success=True)
+        post_automation_history(subject='spray', start=now, end=now, success=False)
     finally:
         GPIO.cleanup()
