@@ -98,9 +98,9 @@ class SprayManager(ManagerBase):
         self.waterpump_sprayer.off()
         valve.off()
 
-    def control(self, last_activated):
+    def control(self):
         print("스프레이 자동화 시작합니다.")
-        last_term = (datetime.now() - last_activated).total_seconds()/60
+        last_term = (datetime.now() - self.automations.activatedAt).total_seconds()/60
         if last_term >= self.sprayterm.period: # minutes
             self.spray(self.valve_1, int(self.spraytime.period))
             self.spray(self.valve_2, int(self.spraytime.period) + 2)
