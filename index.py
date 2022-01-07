@@ -18,6 +18,7 @@ if __name__ == "__main__":
     GPIO.setmode(GPIO.BCM)
     print(f"DATE: {datetime.now()}")
     print("양액 자동화 시스템 시작합니다.")
+    last_automation_time = get_last_activated()
     try:
         automation_models = AutomationCollector().get()
         switch_models = SwitchCollector().get()
@@ -34,7 +35,7 @@ if __name__ == "__main__":
 
         start = datetime.now()
         sm = SprayManager(switch_models, automation_models, sensor_models)
-        sm.control(last_spray_activated)
+        sm.control(last_automation_time)
         end = datetime.now()
         asyncio.run(post_automation_history(subject='spray', start=start, end=end, success=True))
         
