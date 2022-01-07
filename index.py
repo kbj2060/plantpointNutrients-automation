@@ -6,6 +6,7 @@ from collectors.AutomationCollector import AutomationCollector
 from collectors.SwitchCollector import SwitchCollector
 from datetime import datetime
 import RPi.GPIO as GPIO
+from utils import DB_date
 
 
 
@@ -24,16 +25,16 @@ if __name__ == "__main__":
         em = EnvironmentManager(sensor_models)
         em.measure_environment()
 
-        start = datetime.now()
+        start = DB_date(datetime.now())
         wm = WaterManager(switch_models, automation_models, sensor_models)
         wm.control()
-        end = datetime.now()
+        end = DB_date(datetime.now())
         asyncio.run(post_automation_history(subject='watersupply', start=start, end=end, success=True))
 
-        start = datetime.now()
+        start = DB_date(datetime.now())
         sm = SprayManager(switch_models, automation_models, sensor_models)
         sm.control()
-        end = datetime.now()
+        end = DB_date(datetime.now())
         asyncio.run(post_automation_history(subject='spray', start=start, end=end, success=True))
         
     except:
