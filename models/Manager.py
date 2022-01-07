@@ -93,13 +93,10 @@ class SprayManager(ManagerBase):
         spinner = Halo()
         spinner.info(text=f"{floor}층 스프레이 작동 중입니다..")
         valve.on()
-        time.sleep(0.2)
         self.waterpump_sprayer.on()
         time.sleep(operating_time)
         self.waterpump_sprayer.off()
-        time.sleep(0.2)
         valve.off()
-        time.sleep(0.2)
 
     def control(self):
         print("스프레이 자동화 시작합니다.")
