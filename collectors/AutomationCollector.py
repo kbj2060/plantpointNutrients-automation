@@ -23,7 +23,7 @@ class AutomationCollector(CollectorBase):
             
     def get_last_activated(self):
         res = asyncio.run(get_last_automation_date())
-        return res.start
+        return res['start']
         
     def get(self):
         automations = self._get_automations()
