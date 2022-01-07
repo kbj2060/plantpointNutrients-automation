@@ -34,3 +34,6 @@ def detect_outlier(arr):
         if np.abs(z_score) > threshold:
             outliers.append(y)
     return outliers
+
+def DB_date(date: datetime):
+    return date.strftime('%Y-%m-%d %H:%M:%S')

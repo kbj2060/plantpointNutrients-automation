@@ -3,7 +3,9 @@ import asyncio
 from api import get_last_automation_date, get_last_automations, post_automation_history, post_report
 from collectors.CollectorBase import CollectorBase
 from models.AutomationModels import AutomationBase, SprayTerm, SprayTime, WaterSupply, NutrientSupply
+from datetime import datetime
 
+from utils import DB_date
 AUTOMATION_SUBJECTS = ['nutrientsupply', 'spraytime', 'sprayterm', 'watersupply']
 AUTOMATION_MODELS = [SprayTerm, SprayTime, WaterSupply, NutrientSupply]
 
@@ -24,7 +26,14 @@ class AutomationCollector(CollectorBase):
     def get_spray_last_activated(self, subject):
         res = asyncio.run(get_last_automation_date(subject))
         if not res or len(res) == 0:
-            asyncio.run(post_automation_history(subject=subject, start=None, end=None, success=False))
+            asyncio.run(
+                post_automation_history(
+                    subject=subject, 
+                    start=DB_date(datetime(1990,1,1)), 
+                    end=DB_date(datetime(1990,1,1)),
+                    success=False
+                    )
+                )
             asyncio.run(post_report(lv=2, problem='자동화 데이터가 존재하지 않아 이전 데이터를 불러올 수 없습니다.'))
         return res['start']
         
