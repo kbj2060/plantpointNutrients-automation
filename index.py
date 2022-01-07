@@ -38,7 +38,7 @@ if __name__ == "__main__":
         asyncio.run(post_automation_history(subject='spray', start=start, end=end, success=True))
         
     except:
-        now = datetime.now()
+        now = DB_date(datetime.now())
         asyncio.run(post_automation_history(subject='spray', start=now, end=now, success=False))
     finally:
         GPIO.cleanup()
