@@ -37,3 +37,6 @@ def detect_outlier(arr):
 
 def DB_date(date: datetime):
     return date.strftime('%Y-%m-%d %H:%M:%S')
+
+def str2datetime(date):
+    return date.strptime('%Y-%m-%d %H:%M:%S')
