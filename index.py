@@ -1,5 +1,5 @@
 import asyncio
-from api import get_last_automation_date, post_automation_history
+from api import get_last_automation_date, post_automation_history, post_report
 from collectors.SensorCollector import SensorCollector
 from models.Manager import EnvironmentManager, ManagerBase, WaterManager, SprayManager
 from collectors.AutomationCollector import AutomationCollector
@@ -40,5 +40,6 @@ if __name__ == "__main__":
     except:
         now = DB_date(datetime.now())
         asyncio.run(post_automation_history(subject='spray', start=now, end=now, success=False))
+        asyncio.run(post_report(lv=3, problem='자동화 시스템이 시스템 에러로 인해 중단되었습니다.'))
     finally:
         GPIO.cleanup()
