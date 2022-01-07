@@ -24,8 +24,8 @@ async def get_sensors():
     response = requests.get(f"{ADDRESS}/sensor")
     return response.json()
     
-async def get_last_automation_date():
-    response = requests.post(f"{ADDRESS}/automation_history", json={ 'data': { 'limit': 1 }})
+async def get_last_automation_date(subject):
+    response = requests.post(f"{ADDRESS}/automation_history", json={ 'data': { 'subject__eq': subject }})
     return response.json()
 
 async def post_automation_history(subject, start, end, success):
