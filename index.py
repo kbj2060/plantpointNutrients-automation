@@ -8,12 +8,16 @@ from datetime import datetime
 import RPi.GPIO as GPIO
 
 
+async def get_last_activated():
+    res = asyncio.run(get_last_automation_date())
+    res = await res.json()
+    return res['start']
+    
 if __name__ == "__main__":
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
     print(f"DATE: {datetime.now()}")
     print("양액 자동화 시스템 시작합니다.")
-    last_spray_activated = asyncio.run(get_last_automation_date()['start'])
     try:
         automation_models = AutomationCollector().get()
         switch_models = SwitchCollector().get()
