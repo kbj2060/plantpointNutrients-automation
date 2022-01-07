@@ -38,6 +38,7 @@ if __name__ == "__main__":
         asyncio.run(post_automation_history(subject='spray', start=start, end=end, success=True))
         
     except:
+        print('자동화 시스템이 시스템 에러로 인해 중단되었습니다.')
         now = DB_date(datetime.now())
         asyncio.run(post_automation_history(subject='spray', start=now, end=now, success=False))
         asyncio.run(post_report(lv=3, problem='자동화 시스템이 시스템 에러로 인해 중단되었습니다.'))
