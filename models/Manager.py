@@ -1,5 +1,5 @@
 from datetime import datetime
-from api import post_report
+from api import post_automation_history, post_report
 from config import WATERTANK_HEIGHT
 from models.SensorModels import DHT22
 from models.SwitchModels import Valve
@@ -98,9 +98,9 @@ class SprayManager(ManagerBase):
         self.waterpump_sprayer.off()
         valve.off()
 
-    def control(self):
+    def control(self, last_activated):
         print("스프레이 자동화 시작합니다.")
-        last_term = (datetime.now() - self.valve_1.poweredAt).total_seconds()/60
+        last_term = (datetime.now() - last_activated).total_seconds()/60
         if last_term >= self.sprayterm.period: # minutes
             self.spray(self.valve_1, int(self.spraytime.period))
             self.spray(self.valve_2, int(self.spraytime.period) + 2)
