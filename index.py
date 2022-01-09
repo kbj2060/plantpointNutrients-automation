@@ -17,30 +17,31 @@ if __name__ == "__main__":
     print(f"DATE: {datetime.now()}")
     print("양액 자동화 시스템 시작합니다.")
 
-# try:
-    automation_models = AutomationCollector().get()
-    switch_models = SwitchCollector().get()
-    sensor_models = SensorCollector().get()
+    try:
+        automation_models = AutomationCollector().get()
+        switch_models = SwitchCollector().get()
+        sensor_models = SensorCollector().get()
 
-    em = EnvironmentManager(sensor_models)
-    em.measure_environment()
+        em = EnvironmentManager(sensor_models)
+        em.measure_environment()
 
-    start = DB_date(datetime.now())
-    wm = WaterManager(switch_models, automation_models, sensor_models)
-    wm.control()
-    end = DB_date(datetime.now())
-    asyncio.run(post_automation_history(subject='watersupply', start=start, end=end, success=True))
+        start = DB_date(datetime.now())
+        wm = WaterManager(switch_models, automation_models, sensor_models)
+        wm.control()
+        end = DB_date(datetime.now())
+        asyncio.run(post_automation_history(subject='watersupply', start=start, end=end, success=True))
 
-    start = DB_date(datetime.now())
-    sm = SprayManager(switch_models, automation_models, sensor_models)
-    sm.control()
-    end = DB_date(datetime.now())
-    asyncio.run(post_automation_history(subject='spray', start=start, end=end, success=True))
-    
-# except:
-#     print('자동화 시스템이 시스템 에러로 인해 중단되었습니다.')
-#     now = DB_date(datetime.now())
-#     asyncio.run(post_automation_history(subject='spray', start=now, end=now, success=False))
-#     asyncio.run(post_report(lv=3, problem='자동화 시스템이 시스템 에러로 인해 중단되었습니다.'))
-# finally:
-    GPIO.cleanup()
+        start = DB_date(datetime.now())
+        sm = SprayManager(switch_models, automation_models, sensor_models)
+        sm.control()
+        end = DB_date(datetime.now())
+        asyncio.run(post_automation_history(subject='spray', start=start, end=end, success=True))
+
+    except:
+        print('자동화 시스템이 시스템 에러로 인해 중단되었습니다.')
+        now = DB_date(datetime.now())
+        asyncio.run(post_automation_history(subject='spray', start=now, end=now, success=False))
+        asyncio.run(post_report(lv=3, problem='자동화 시스템이 시스템 에러로 인해 중단되었습니다.'))
+
+    finally:
+        GPIO.cleanup()
