@@ -111,10 +111,12 @@ class SprayManager(ManagerBase):
             self.spray(self.valve_2, int(self.spraytime.period) + 2)
             self.spray(self.valve_3, int(self.spraytime.period) + 4)
             print("스프레이 자동화 종료됩니다.")
+            return 1
         else:
             print("스프레이 자동화 작동될 시간이 아닙니다.")
             return 0
-        return 1
+
+
 class EnvironmentManager(ManagerBase):
     def __init__(self, sensors: dict) -> None:
         self.sensors = sensors
