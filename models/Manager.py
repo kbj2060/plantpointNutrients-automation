@@ -77,7 +77,9 @@ class WaterManager(ManagerBase):
             self.water_tank(WATERTANK_HEIGHT * 0.95)
         else:
             print("양액 시스템 상태 양호합니다.")
+            return 0
         print("양액 자동화 시스템 종료합니다.")
+        return 1
 
 
 class SprayManager(ManagerBase):
@@ -111,7 +113,8 @@ class SprayManager(ManagerBase):
             print("스프레이 자동화 종료됩니다.")
         else:
             print("스프레이 자동화 작동될 시간이 아닙니다.")
-        
+            return 0
+        return 1
 class EnvironmentManager(ManagerBase):
     def __init__(self, sensors: dict) -> None:
         self.sensors = sensors
