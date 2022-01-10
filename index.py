@@ -25,19 +25,11 @@ if __name__ == "__main__":
         em = EnvironmentManager(sensor_models)
         em.measure_environment()
 
-        start = DB_date(datetime.now())
         wm = WaterManager(switch_models, automation_models, sensor_models)
-        isSuccess = wm.control()
-        end = DB_date(datetime.now())
-        if isSuccess:
-            asyncio.run(post_automation_history(subject='watersupply', start=start, success=True))
+        wm.control()
 
-        start = DB_date(datetime.now())
         sm = SprayManager(switch_models, automation_models, sensor_models)
-        isSuccess = sm.control()
-        end = DB_date(datetime.now())
-        if isSuccess:
-            asyncio.run(post_automation_history(subject='spray', start=start, success=True))
+        sm.control()
 
     except:
         print('자동화 시스템이 시스템 에러로 인해 중단되었습니다.')
