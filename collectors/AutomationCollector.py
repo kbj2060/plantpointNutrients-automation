@@ -30,7 +30,6 @@ class AutomationCollector(CollectorBase):
                 post_automation_history(
                     subject=subject, 
                     start=DB_date(datetime(1990,1,1)), 
-                    end=DB_date(datetime(1990,1,1)),
                     success=False
                     )
                 )

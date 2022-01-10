@@ -28,7 +28,7 @@ async def get_last_automation_date(subject):
     response = requests.post(f"{ADDRESS}/automation_history", json={ 'data': { 'subject__eq': subject }})
     return response.json()
 
-async def post_automation_history(subject, start, end, success):
+async def post_automation_history(subject, start, success):
     requests.post(
         f"{ADDRESS}/automation_history/create", 
         json={ 'data': { 
