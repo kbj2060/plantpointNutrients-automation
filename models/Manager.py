@@ -55,7 +55,11 @@ class WaterManager(ManagerBase):
         spinner.info('물탱크 채우기 시작합니다.')
         self.valve_in.on()
         self.waterpump_center.on()
+        timeout = time.time() + 60 * 5
         while self.waterlevel.get_waterlevel() >= height:
+            if time.time() > timeout:
+                asyncio.run(post_report(lv=3, problem="5분 동안 물이 채워지지 않고 있습니다. 확인바랍니다."))
+                raise Exception('5분 동안 물이 채워지지 않고 있습니다. 확인바랍니다.')
             waterlevel = self.waterlevel.get_waterlevel()
             print(f"현재 수위는 {waterlevel}cm 입니다.")
             time.sleep(1)
@@ -68,7 +72,7 @@ class WaterManager(ManagerBase):
         waterlevel = self.waterlevel.get_waterlevel()
         print(f"수위는 {waterlevel} cm 입니다.")
         if waterlevel < 0 or waterlevel > WATERTANK_HEIGHT:
-            post_report(lv=3, problem="수위센서측정에 문제가 생겼습니다.")
+            asyncio.run(post_report(lv=3, problem="수위센서측정에 문제가 생겼습니다."))
             raise Exception('수위센서측정에 문제가 생겼습니다.')
         elif waterlevel <= WATERTANK_HEIGHT * 0.1:
             asyncio.run(post_automation_history(subject='watersupply', start=DB_date(datetime.now()), success=True))
