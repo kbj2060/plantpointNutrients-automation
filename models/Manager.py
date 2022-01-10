@@ -42,7 +42,11 @@ class WaterManager(ManagerBase):
         spinner = Halo()
         spinner.info('물탱크 비우기 시작합니다.')
         self.valve_out.on()
-        while self.waterlevel.get_waterlevel() >= WATERTANK_HEIGHT * 0.07: # 3cm
+        timeout = time.time() + 60 * 5
+        while self.waterlevel.get_waterlevel() >= WATERTANK_HEIGHT * 0.07:
+            if time.time() > timeout:
+                asyncio.run(post_report(lv=3, problem="5분 동안 물이 채워지지 않고 있습니다. 확인바랍니다."))
+                raise Exception('5분 동안 물이 채워지지 않고 있습니다. 확인바랍니다.')
             waterlevel = self.waterlevel.get_waterlevel()
             print(f"현재 수위는 {waterlevel}cm 입니다.")
             time.sleep(1)

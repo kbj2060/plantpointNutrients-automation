@@ -109,7 +109,7 @@ class WaterLevel(SensorModel):
         time_interval = stop - start      
         distance = time_interval * 17000
         distance = round(distance, 2)
-        return WATERTANK_HEIGHT - distance
+        return round(WATERTANK_HEIGHT - distance, 1)
 
     def get_waterlevel(self):
         results = []
