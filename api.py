@@ -34,7 +34,6 @@ async def post_automation_history(subject, start, end, success):
         json={ 'data': { 
                     'subject': subject, 
                     'start': start,
-                    'end': end, 
                     'success': success 
                 }
             }
