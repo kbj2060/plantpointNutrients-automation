@@ -79,7 +79,7 @@ class WaterManager(ManagerBase):
             asyncio.run(post_report(lv=3, problem="수위센서측정에 문제가 생겼습니다."))
             raise Exception('수위센서측정에 문제가 생겼습니다.')
         elif waterlevel <= WATERTANK_HEIGHT * 0.1:
-            asyncio.run(post_automation_history(subject='watersupply', start=DB_date(datetime.now()), success=True))
+            asyncio.run(post_automation_history(subject='watersupply', start=DB_date(datetime.now()), isCompleted=True))
             self.empty_tank()
             self.waterpump_a.supply_nutrient()
             self.water_tank(WATERTANK_HEIGHT//2)
@@ -119,7 +119,7 @@ class SprayManager(ManagerBase):
     def control(self):
         print("스프레이 자동화 시작합니다.")
         if self.check_term():
-            asyncio.run(post_automation_history(subject='spray', start= DB_date(datetime.now()), success=True))
+            asyncio.run(post_automation_history(subject='spray', start= DB_date(datetime.now()), isCompleted=True))
             self.spray(self.valve_1, int(self.spraytime.period))
             self.spray(self.valve_2, int(self.spraytime.period) + 2)
             self.spray(self.valve_3, int(self.spraytime.period) + 4)
