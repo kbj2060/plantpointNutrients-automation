@@ -1,8 +1,7 @@
 import asyncio
 from datetime import datetime
 from api import post_automation_history, post_report
-from config import WATERTANK_HEIGHT
-from models.SensorModels import DHT22
+from config import WATERTANK_HEIGHT, WATERTANK_LIMIT
 from models.SwitchModels import Valve
 from halo import Halo
 import time
@@ -78,13 +77,14 @@ class WaterManager(ManagerBase):
         if waterlevel < 0 or waterlevel > WATERTANK_HEIGHT:
             asyncio.run(post_report(lv=3, problem="수위센서측정에 문제가 생겼습니다."))
             raise Exception('수위센서측정에 문제가 생겼습니다.')
-        elif waterlevel <= WATERTANK_HEIGHT * 0.1:
-            asyncio.run(post_automation_history(subject='watersupply', start=DB_date(datetime.now()), isCompleted=True))
+        elif waterlevel <= WATERTANK_LIMIT:
+            asyncio.run(post_automation_history(subject='watersupply', start=DB_date(datetime.now()), isCompleted=False))
             self.empty_tank()
             self.waterpump_a.supply_nutrient()
             self.water_tank(WATERTANK_HEIGHT//2)
             self.waterpump_b.supply_nutrient()
             self.water_tank(WATERTANK_HEIGHT * 0.95)
+            asyncio.run(post_automation_history(subject='watersupply', start=DB_date(datetime.now()), isCompleted=True))
         else:
             print("양액 시스템 상태 양호합니다.")
         print("양액 자동화 시스템 종료합니다.")
@@ -102,8 +102,7 @@ class SprayManager(ManagerBase):
 
     def check_term(self):
         last_term = (datetime.now() - str2datetime(self.automations['spray_activatedAt'])).total_seconds()/60
-        last_term = round(last_term)
-        if last_term >= self.sprayterm.period:
+        if  round(last_term) >= self.sprayterm.period:
             return True
 
     def spray(self, valve: Valve, operating_time: int):
@@ -119,11 +118,12 @@ class SprayManager(ManagerBase):
     def control(self):
         print("스프레이 자동화 시작합니다.")
         if self.check_term():
-            asyncio.run(post_automation_history(subject='spray', start= DB_date(datetime.now()), isCompleted=True))
+            asyncio.run(post_automation_history(subject='spray', start= DB_date(datetime.now()), isCompleted=False))
             self.spray(self.valve_1, int(self.spraytime.period))
             self.spray(self.valve_2, int(self.spraytime.period) + 2)
             self.spray(self.valve_3, int(self.spraytime.period) + 4)
             print("스프레이 자동화 종료됩니다.")
+            asyncio.run(post_automation_history(subject='spray', start= DB_date(datetime.now()), isCompleted=True))
         else:
             print("스프레이 자동화 작동될 시간이 아닙니다.")
 
