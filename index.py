@@ -14,8 +14,8 @@ class SprayPassException(Exception):
     pass
 
 def check_spray_condition():
-    sprayterm = asyncio.run(get_last_automations('sprayterm'))
-    spray_last_activated = AutomationCollector.get_last_activated('spray')
+    sprayterm = asyncio.run(get_last_automations('sprayterm'))['period']
+    spray_last_activated = AutomationCollector.get_last_activated('spray')['start']
     last_term = (datetime.now() - str2datetime(spray_last_activated)).total_seconds()/60
     if round(last_term) >= sprayterm:
         return True
@@ -49,10 +49,14 @@ if __name__ == "__main__":
         if check_waterlevel_condition(sensor_models['waterlevel']):
             wm = WaterManager(switch_models, automation_models, sensor_models)
             wm.control()
+        else:
+            print("아직 수위가 높습니다. 수급을하지 않습니다.")
 
         if check_spray_condition() and check_water_condition():
             sm = SprayManager(switch_models, automation_models, sensor_models)
             sm.control()
+        else:
+            print("수급 중이거나 아직 스프레이 작동 시간이 아닙니다.")
 
     except SprayPassException:
         print('스프레이 자동화는 작동하지 않는 조건입니다.')
