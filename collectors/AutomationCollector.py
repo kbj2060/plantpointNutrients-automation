@@ -24,8 +24,8 @@ class AutomationCollector(CollectorBase):
             self.error_handling('데이터 쿼리')
     
     @classmethod           
-    def get_last_activated(self, subject):
-        res = asyncio.run(get_last_automation_date(subject))
+    def get_last_activated(self, subject, isCompleted=False):
+        res = asyncio.run(get_last_automation_date(subject, isCompleted))
         if res is None or len(res) == 0:
             asyncio.run(
                 post_automation_history(
