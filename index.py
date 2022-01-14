@@ -16,6 +16,7 @@ class SprayPassException(Exception):
 def check_spray_condition():
     sprayterm = asyncio.run(get_last_automations('sprayterm'))['period']
     spray_last_activated = AutomationCollector.get_last_activated('spray')['start']
+    print(f"마지막 작동 시간은 {spray_last_activated} 입니다.")
     last_term = (datetime.now() - str2datetime(spray_last_activated)).total_seconds()/60
     if round(last_term) >= sprayterm:
         return True
