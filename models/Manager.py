@@ -93,6 +93,9 @@ class WaterManager(ManagerBase):
 class SprayManager(ManagerBase):
     def __init__(self, switches: dict, automations: dict, sensors: dict) -> None:
         super().__init__(switches, automations, sensors)
+        self.waterpump_1 = self._find_switch(name='waterpump_1')
+        self.waterpump_2 = self._find_switch(name='waterpump_2')
+        self.waterpump_3 = self._find_switch(name='waterpump_3')
         self.waterpump_sprayer = self._find_switch(name='waterpump_sprayer')
         self.spraytime = self._find_automation(name='spraytime')
         self.sprayterm = self._find_automation(name='sprayterm')
@@ -102,21 +105,21 @@ class SprayManager(ManagerBase):
         if  round(last_term) >= self.sprayterm.period:
             return True
 
-    def spray(self, floor: int, operating_time: int):
+    def spray(self, waterpump, operating_time: int):
         spinner = Halo()
-        spinner.info(text=f"{floor}층 스프레이 작동 중입니다..")
-        self.waterpump_sprayer.on()
+        spinner.info(text=f" 스프레이 작동 중입니다..")
+        waterpump.on()
         time.sleep(operating_time)
-        self.waterpump_sprayer.off()
+        waterpump.off()
         time.sleep(1)
         
     def control(self):
         print("스프레이 자동화 시작합니다.")
         if self.check_term():
             asyncio.run(post_automation_history(subject='spray', start= DB_date(datetime.now()), isCompleted=False))
-            self.spray(int(self.spraytime.period))
-            self.spray(int(self.spraytime.period) + 2)
-            self.spray(int(self.spraytime.period) + 4)
+            self.spray(self.waterpump_1, int(self.spraytime.period))
+            self.spray(self.waterpump_2, int(self.spraytime.period) + 2)
+            self.spray(self.waterpump_3, int(self.spraytime.period) + 4)
             print("스프레이 자동화 종료됩니다.")
             asyncio.run(post_automation_history(subject='spray', start= DB_date(datetime.now()), isCompleted=True))
         else:

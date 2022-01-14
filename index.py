@@ -14,8 +14,8 @@ class SprayPassException(Exception):
     pass
 
 def check_spray_condition():
-    sprayterm = asyncio.run(get_last_automations('sprayterm'))
-    spray_last_activated = AutomationCollector.get_last_activated('spray')
+    sprayterm = asyncio.run(get_last_automations('sprayterm'))['period']
+    spray_last_activated = AutomationCollector.get_last_activated('spray')['start']
     last_term = (datetime.now() - str2datetime(spray_last_activated)).total_seconds()/60
     if round(last_term) >= sprayterm:
         return True
@@ -37,7 +37,7 @@ if __name__ == "__main__":
     print(f"DATE: {datetime.now()}")
     print("양액 자동화 시스템 시작합니다.")
     
-    try:
+    try: 
         sensor_models = SensorCollector().get()
 
         em = EnvironmentManager(sensor_models)
@@ -53,15 +53,11 @@ if __name__ == "__main__":
         if check_spray_condition() and check_water_condition():
             sm = SprayManager(switch_models, automation_models, sensor_models)
             sm.control()
-
-    except SprayPassException:
-        print('스프레이 자동화는 작동하지 않는 조건입니다.')
-
     except:
         print('자동화 시스템이 시스템 에러로 인해 중단되었습니다.')
         now = DB_date(datetime.now())
         asyncio.run(post_automation_history(subject='error', start=now, isCompleted=False))
         asyncio.run(post_report(lv=3, problem='자동화 시스템이 시스템 에러로 인해 중단되었습니다.'))
-
+    
     finally:
         GPIO.cleanup()

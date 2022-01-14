@@ -25,7 +25,7 @@ class SwitchCollector(CollectorBase):
         switches = asyncio.run(get_last_switches())
         return sorted(switches, key=lambda k: k['machine_id'])
 
-    async def post_excepted_switch(self, name, machine_id):
+    def post_excepted_switch(self, name, machine_id):
         # mqtt 없으니 여기서 post_switch 하고 gpio off 해주기
         asyncio.run(
                     post_switch(
