@@ -27,6 +27,7 @@ def check_water_condition():
 
 def check_waterlevel_condition(waterlevel_sensor):
     waterlevel = waterlevel_sensor.get_waterlevel()
+    print(f"수위 : {waterlevel}")
     if waterlevel <= WATERTANK_LIMIT:
         return True
 
@@ -49,10 +50,13 @@ if __name__ == "__main__":
         if check_waterlevel_condition(sensor_models['waterlevel']):
             wm = WaterManager(switch_models, automation_models, sensor_models)
             wm.control()
+        else: print("수급 작동 조건이 충족되지 않았습니다.")
 
         if check_spray_condition() and check_water_condition():
             sm = SprayManager(switch_models, automation_models, sensor_models)
             sm.control()
+        else: print("스프레이 작동 조건이 충족되지 않았습니다.")
+        
     except:
         print('자동화 시스템이 시스템 에러로 인해 중단되었습니다.')
         now = DB_date(datetime.now())
