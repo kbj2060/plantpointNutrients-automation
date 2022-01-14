@@ -108,7 +108,8 @@ class SprayManager(ManagerBase):
         self.waterpump_sprayer.on()
         time.sleep(operating_time)
         self.waterpump_sprayer.off()
-
+        time.sleep(1)
+        
     def control(self):
         print("스프레이 자동화 시작합니다.")
         if self.check_term():
