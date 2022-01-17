@@ -27,7 +27,7 @@ def check_water_condition():
         return True
 
 def check_waterlevel_condition(waterlevel_sensor):
-    if waterlevel_sensor.get_waterlevel():
+    if not waterlevel_sensor.get_waterlevel():
         return True
 
 
@@ -45,7 +45,7 @@ if __name__ == "__main__":
     automation_models = AutomationCollector().get()
     switch_models = SwitchCollector().get()
 
-    if check_waterlevel_condition(sensor_models['upper_waterlevel']) or check_waterlevel_condition(sensor_models['lower_waterlevel']):
+    if check_waterlevel_condition(sensor_models['lower_waterlevel']):
         wm = WaterManager(switch_models, automation_models, sensor_models)
         wm.control()
     else: print("수급 작동 조건이 충족되지 않았습니다.")
