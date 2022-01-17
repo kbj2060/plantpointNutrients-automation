@@ -4,7 +4,7 @@ import RPi.GPIO as GPIO
 import Adafruit_DHT as dht
 from api import post_humidity, post_temperature
 import spidev
-from config import CLOCKPIN, CSPIN, CURRENT_LIMIT, MISOPIN, MOSIPIN, WATERTANK_HEIGHT
+from config import CURRENT_LIMIT, SPICLK, SPICS, SPIMISO, SPIMOSI
 import time
 import itertools
 import Adafruit_GPIO.SPI as SPI
@@ -12,10 +12,6 @@ from utils import detect_outlier
 
 class MCP3208:
     def __init__(self, channel):        
-        SPICLK = 11
-        SPIMISO = 9
-        SPIMOSI = 10
-        SPICS = 8
         GPIO.setup(SPIMOSI, GPIO.OUT)
         GPIO.setup(SPIMISO, GPIO.IN)
         GPIO.setup(SPICLK, GPIO.OUT)
@@ -25,28 +21,28 @@ class MCP3208:
     def read(self):
         if ((self.channel > 7) or (self.channel < 0)):
                 return -1
-        GPIO.output(self.SPICS, True)      # CS핀을 high로 만든다.
-        GPIO.output(self.SPICLK, False)  # clock핀을 low로 만든다. 시작한다.
-        GPIO.output(self.SPICS, False)     # CS핀을 low로 만든다.
+        GPIO.output(SPICS, True)      # CS핀을 high로 만든다.
+        GPIO.output(SPICLK, False)  # clock핀을 low로 만든다. 시작한다.
+        GPIO.output(SPICS, False)     # CS핀을 low로 만든다.
         commandout = self.channel
         commandout |= 0x18  # start bit + single-ended bit
         commandout <<= 3    # we only need to send 5 bits here
         for i in range(5):
                 if (commandout & 0x80):
-                        GPIO.output(self.SPIMOSI, True)
+                        GPIO.output(SPIMOSI, True)
                 else:
-                        GPIO.output(self.SPIMOSI, False)
+                        GPIO.output(SPIMOSI, False)
                 commandout <<= 1
-                GPIO.output(self.SPICLK, True)
-                GPIO.output(self.SPICLK, False)
+                GPIO.output(SPICLK, True)
+                GPIO.output(SPICLK, False)
         adcout = 0
         for i in range(14):
-                GPIO.output(self.SPICLK, True)
-                GPIO.output(self.SPICLK, False)
+                GPIO.output(SPICLK, True)
+                GPIO.output(SPICLK, False)
                 adcout <<= 1
-                if (GPIO.input(self.SPIMISO)):
+                if (GPIO.input(SPIMISO)):
                         adcout |= 0x1
-        GPIO.output(self.SPICS, True)
+        GPIO.output(SPICS, True)
         adcout >>= 1       # first bit is 'null' so drop it
         return adcout      # adcout는 0부터 4095까지 값을 갖는다.
 

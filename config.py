@@ -8,10 +8,10 @@ UNITS = {
     'spraytime': 'seconds',
     'sprayterm': 'minutes',
 }
-CSPIN = 8
-MISOPIN = 9
-MOSIPIN = 10
-CLOCKPIN = 11
+SPICLK = 11
+SPIMISO = 9
+SPIMOSI = 10
+SPICS = 8
 
 CURRENT_LIMIT = 3500
 WATERTANK_HEIGHT = 63 # cm
