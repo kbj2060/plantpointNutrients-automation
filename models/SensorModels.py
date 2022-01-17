@@ -4,7 +4,7 @@ import RPi.GPIO as GPIO
 import Adafruit_DHT as dht
 from api import post_humidity, post_temperature
 import spidev
-from config import CLOCKPIN, CSPIN, MISOPIN, MOSIPIN, WATERTANK_HEIGHT
+from config import CLOCKPIN, CSPIN, CURRENT_LIMIT, MISOPIN, MOSIPIN, WATERTANK_HEIGHT
 import time
 import itertools
 import Adafruit_GPIO.SPI as SPI
@@ -22,32 +22,31 @@ class MCP3208:
         GPIO.setup(SPICS, GPIO.OUT)
         self.channel = channel
 
-    def read():
+    def read(self):
         if ((self.channel > 7) or (self.channel < 0)):
                 return -1
-        GPIO.output(SPICS, True)      # CS핀을 high로 만든다.
-        GPIO.output(SPICLK, False)  # clock핀을 low로 만든다. 시작한다.
-        GPIO.output(SPICS, False)     # CS핀을 low로 만든다.
-        commandout = adcnum
+        GPIO.output(self.SPICS, True)      # CS핀을 high로 만든다.
+        GPIO.output(self.SPICLK, False)  # clock핀을 low로 만든다. 시작한다.
+        GPIO.output(self.SPICS, False)     # CS핀을 low로 만든다.
+        commandout = self.channel
         commandout |= 0x18  # start bit + single-ended bit
         commandout <<= 3    # we only need to send 5 bits here
         for i in range(5):
                 if (commandout & 0x80):
-                        GPIO.output(SPIMOSI, True)
+                        GPIO.output(self.SPIMOSI, True)
                 else:
-                        GPIO.output(SPIMOSI, False)
+                        GPIO.output(self.SPIMOSI, False)
                 commandout <<= 1
-                GPIO.output(SPICLK, True)
-                GPIO.output(SPICLK, False)
+                GPIO.output(self.SPICLK, True)
+                GPIO.output(self.SPICLK, False)
         adcout = 0
         for i in range(14):
-                GPIO.output(SPICLK, True)
-                GPIO.output(SPICLK, False)
+                GPIO.output(self.SPICLK, True)
+                GPIO.output(self.SPICLK, False)
                 adcout <<= 1
-                if (GPIO.input(SPIMISO)):
+                if (GPIO.input(self.SPIMISO)):
                         adcout |= 0x1
-        GPIO.output(SPICS, True)
-        
+        GPIO.output(self.SPICS, True)
         adcout >>= 1       # first bit is 'null' so drop it
         return adcout      # adcout는 0부터 4095까지 값을 갖는다.
 
@@ -82,36 +81,38 @@ class Current(SensorModel):
 class WaterLevel(SensorModel):
     def __init__(self, id: int, name: str, pin: int, createdAt: str) -> None:
         super().__init__(id, name, pin, createdAt)
-        GPIO.setup(self.pin, GPIO.OUT)
-        GPIO.setup(self.pin+1, GPIO.IN)
+        self.adc = MCP3208(pin)
+        # GPIO.setup(self.pin, GPIO.OUT)
+        # GPIO.setup(self.pin+1, GPIO.IN)
 
     def measure_waterlevel(self):
-        GPIO.output(self.pin, GPIO.LOW)         
-        time.sleep(0.5)
+        return self.adc.read()
+        # GPIO.output(self.pin, GPIO.LOW)         
+        # time.sleep(0.5)
 
-        GPIO.output(self.pin, GPIO.HIGH)
-        time.sleep(0.00001)
-        GPIO.output(self.pin, GPIO.LOW)
+        # GPIO.output(self.pin, GPIO.HIGH)
+        # time.sleep(0.00001)
+        # GPIO.output(self.pin, GPIO.LOW)
 
-        while GPIO.input(self.pin+1) == 0:
-            start = time.time()
+        # while GPIO.input(self.pin+1) == 0:
+        #     start = time.time()
 
-        while GPIO.input(self.pin+1) == 1:
-            stop = time.time()
+        # while GPIO.input(self.pin+1) == 1:
+        #     stop = time.time()
 
-        time_interval = stop - start      
-        distance = time_interval * 17000
-        distance = round(distance, 2)
-        return round(WATERTANK_HEIGHT - distance, 1)
+        # time_interval = stop - start      
+        # distance = time_interval * 17000
+        # distance = round(distance, 2)
+        # return round(WATERTANK_HEIGHT - distance, 1)
 
     def get_waterlevel(self):
         results = []
-        for _ in itertools.repeat(None, 4):
+        for _ in itertools.repeat(None, 10):
             results.append(self.measure_waterlevel())
         outliers = detect_outlier(results)
         if outliers:
             results = [item for item in results if item not in outliers]
-        return sum(results)/len(results)
+        return 1 if sum(results)/len(results) >= CURRENT_LIMIT else 0
 
 class DHT22(SensorModel):
     def __init__(self, id: int, name: str, pin: int, createdAt: str) -> None:
