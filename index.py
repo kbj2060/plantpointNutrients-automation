@@ -56,7 +56,7 @@ if __name__ == "__main__":
         sm = SprayManager(switch_models, automation_models, sensor_models)
         sm.control()
     else: print("스프레이 작동 조건이 충족되지 않았습니다.")
-        
+    
     print('자동화 시스템이 시스템 에러로 인해 중단되었습니다.')
     now = DB_date(datetime.now())
     asyncio.run(post_automation_history(subject='error', start=now, isCompleted=False))

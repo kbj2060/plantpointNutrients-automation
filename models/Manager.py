@@ -98,6 +98,7 @@ class SprayManager(ManagerBase):
         self.waterpump_3 = self._find_switch(name='waterpump_3')
         self.waterpump_sprayer = self._find_switch(name='waterpump_sprayer')
         self.spraytime = self._find_automation(name='spraytime')
+        self.wm = WaterManager(switches, automations, sensors)
         self.sprayterm = self._find_automation(name='sprayterm')
 
     def check_term(self):
