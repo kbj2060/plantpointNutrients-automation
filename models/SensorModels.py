@@ -39,11 +39,11 @@ class MCP3208:
         for i in range(14):
                 GPIO.output(SPICLK, True)
                 GPIO.output(SPICLK, False)
-                adcout <<= 1
+                adcout >>= 1
                 if (GPIO.input(SPIMISO)):
                         adcout |= 0x1
         GPIO.output(SPICS, True)
-        adcout >>= 1       # first bit is 'null' so drop it
+        adcout <<= 1       # first bit is 'null' so drop it
         return adcout      # adcout는 0부터 4095까지 값을 갖는다.
 
 class SensorModel:
@@ -77,38 +77,16 @@ class Current(SensorModel):
 class WaterLevel(SensorModel):
     def __init__(self, id: int, name: str, pin: int, createdAt: str) -> None:
         super().__init__(id, name, pin, createdAt)
-        self.adc = MCP3208(pin)
-        # GPIO.setup(self.pin, GPIO.OUT)
-        # GPIO.setup(self.pin+1, GPIO.IN)
+        GPIO.setup(self.pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
     def measure_waterlevel(self):
-        return self.adc.read()
-        # GPIO.output(self.pin, GPIO.LOW)         
-        # time.sleep(0.5)
-
-        # GPIO.output(self.pin, GPIO.HIGH)
-        # time.sleep(0.00001)
-        # GPIO.output(self.pin, GPIO.LOW)
-
-        # while GPIO.input(self.pin+1) == 0:
-        #     start = time.time()
-
-        # while GPIO.input(self.pin+1) == 1:
-        #     stop = time.time()
-
-        # time_interval = stop - start      
-        # distance = time_interval * 17000
-        # distance = round(distance, 2)
-        # return round(WATERTANK_HEIGHT - distance, 1)
+        return True if GPIO.input(self.pin) else False
 
     def get_waterlevel(self):
         results = []
-        for _ in itertools.repeat(None, 10):
+        for _ in itertools.repeat(None, 5):
             results.append(self.measure_waterlevel())
-        outliers = detect_outlier(results)
-        if outliers:
-            results = [item for item in results if item not in outliers]
-        return 1 if sum(results)/len(results) >= CURRENT_LIMIT else 0
+        return not results in False
 
 class DHT22(SensorModel):
     def __init__(self, id: int, name: str, pin: int, createdAt: str) -> None:
