@@ -86,7 +86,7 @@ class WaterLevel(SensorModel):
         results = []
         for _ in itertools.repeat(None, 5):
             results.append(self.measure_waterlevel())
-        return not results in False
+        return not False in results
 
 class DHT22(SensorModel):
     def __init__(self, id: int, name: str, pin: int, createdAt: str) -> None:
