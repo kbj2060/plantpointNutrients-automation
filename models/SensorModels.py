@@ -2,7 +2,7 @@ import asyncio
 from halo import Halo
 import RPi.GPIO as GPIO
 import Adafruit_DHT as dht
-from api import post_humidity, post_temperature
+from api import post_humidity, post_temperature, post_report
 import spidev
 from config import CURRENT_LIMIT, SPICLK, SPICS, SPIMISO, SPIMOSI
 import time
@@ -86,7 +86,14 @@ class WaterLevel(SensorModel):
         results = []
         for _ in itertools.repeat(None, 5):
             results.append(self.measure_waterlevel())
-        return not False in results
+        if not self.all_equal(results):
+            post_report(lv=2, problem="waterlevel values are not equal")
+            print("수위 센서의 값이 일정하지 않습니다. 확인 바랍니다.")
+            return True if results.count(True) > results.count(False) else False
+        return results[0]
+
+    def all_equal(self, lst):
+        return lst.count(lst[0]) == len(lst)
 
 class DHT22(SensorModel):
     def __init__(self, id: int, name: str, pin: int, createdAt: str) -> None:
