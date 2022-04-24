@@ -30,7 +30,7 @@ class AutomationCollector(CollectorBase):
             asyncio.run(
                 post_automation_history(
                     subject=subject, 
-                    start=DB_date(datetime(1990,1,1)), 
+                    createdAt=DB_date(datetime(1990,1,1)), 
                     isCompleted=False
                     )
                 )
@@ -43,6 +43,6 @@ class AutomationCollector(CollectorBase):
         automation_models = self._classify_automation_model(automations)
         if not (len(automations) == len(automation_models) == len(AUTOMATION_SUBJECTS)):
             self.error_handling('Automation 데이터 검증')
-        automation_models['spray_activatedAt'] = self.get_last_activated('spray')['start']
-        automation_models['watersupply_activatedAt'] = self.get_last_activated('watersupply')['start']
+        automation_models['spray_activatedAt'] = self.get_last_activated('spray')['createdAt']
+        automation_models['watersupply_activatedAt'] = self.get_last_activated('watersupply')['createdAt']
         return automation_models

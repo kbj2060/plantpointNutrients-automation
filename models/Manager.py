@@ -78,13 +78,13 @@ class WaterManager(ManagerBase):
         #     asyncio.run(post_report(lv=3, problem="수위센서측정에 문제가 생겼습니다."))
         #     raise Exception('수위센서측정에 문제가 생겼습니다.')
         if not lwl:
-            asyncio.run(post_automation_history(subject='watersupply', start=DB_date(datetime.now()), isCompleted=False))
+            asyncio.run(post_automation_history(subject='watersupply', createdAt=DB_date(datetime.now()), isCompleted=False))
             # self.empty_tank()
             self.waterpump_a.supply_nutrient()
             self.water_tank(self.middle_waterlevel)
             self.waterpump_b.supply_nutrient()
             self.water_tank(self.upper_waterlevel)
-            asyncio.run(post_automation_history(subject='watersupply', start=DB_date(datetime.now()), isCompleted=True))
+            asyncio.run(post_automation_history(subject='watersupply', createdAt=DB_date(datetime.now()), isCompleted=True))
         else:
             print("양액 시스템 상태 양호합니다.")
         print("양액 자동화 시스템 종료합니다.")
@@ -117,12 +117,12 @@ class SprayManager(ManagerBase):
     def control(self):
         print("스프레이 자동화 시작합니다.")
         if self.check_term():
-            asyncio.run(post_automation_history(subject='spray', start= DB_date(datetime.now()), isCompleted=False))
+            asyncio.run(post_automation_history(subject='spray', createdAt= DB_date(datetime.now()), isCompleted=False))
             self.spray(self.waterpump_1, int(self.spraytime.period))
             self.spray(self.waterpump_2, int(self.spraytime.period) + 2)
             self.spray(self.waterpump_3, int(self.spraytime.period) + 4)
             print("스프레이 자동화 종료됩니다.")
-            asyncio.run(post_automation_history(subject='spray', start= DB_date(datetime.now()), isCompleted=True))
+            asyncio.run(post_automation_history(subject='spray', createdAt= DB_date(datetime.now()), isCompleted=True))
         else:
             print("스프레이 자동화 작동될 시간이 아닙니다.")
 

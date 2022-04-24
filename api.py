@@ -28,12 +28,12 @@ async def get_last_automation_date(subject, isCompleted):
     response = requests.post(f"{ADDRESS}/automation_history", json={ 'data': { 'subject__eq': subject, 'isCompleted': isCompleted }})
     return response.json()
 
-async def post_automation_history(subject, start, isCompleted):
+async def post_automation_history(subject, createdAt, isCompleted):
     requests.post(
         f"{ADDRESS}/automation_history/create", 
         json={ 'data': { 
                     'subject': subject, 
-                    'start': start,
+                    'createdAt': createdAt,
                     'isCompleted': isCompleted 
                 }
             }
