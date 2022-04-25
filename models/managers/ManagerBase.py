@@ -1,6 +1,9 @@
+from db import MysqlController
 
-class ManagerBase:
+
+class ManagerBase(MysqlController):
     def __init__(self, switches: dict, automations: dict, sensors: dict) -> None:
+        MysqlController.__init__(self)
         self.switches = switches
         self.automations = automations
         self.sensors = sensors

@@ -1,15 +1,13 @@
 import time
-from db import MysqlController
 from models.managers.DeviceManager import DeviceManager
 
 
 MIN_HOUR = 0
 MAX_HOUR = 23
 
-class FanManager(DeviceManager, MysqlController):
+class FanManager(DeviceManager):
     def __init__(self) -> None:
         DeviceManager.__init__(self)
-        MysqlController.__init__(self)
         self.last_automation = self.select_fan_automation()
         print(self.last_automation)
         self.topic = self.make_machine_topic('fan')

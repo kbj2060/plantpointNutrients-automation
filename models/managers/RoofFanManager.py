@@ -1,15 +1,13 @@
 import time
-from db import MysqlController
 from models.managers.DeviceManager import DeviceManager
 
 
 MIN_HOUR = 0
 MAX_HOUR = 23
 
-class RoofFanManager(DeviceManager, MysqlController):
+class RoofFanManager(DeviceManager):
     def __init__(self) -> None:
         DeviceManager.__init__(self)
-        MysqlController.__init__(self)
         self.last_automation = self.select_rooffan_automation()
         self.topic = self.make_machine_topic('rooffan')
         self.state = self.select_current_state('rooffan')

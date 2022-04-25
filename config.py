@@ -20,6 +20,7 @@ WATERTANK_HEIGHT = 63 # cm
 WATERTANK_LIMIT = WATERTANK_HEIGHT * 0.1
 WATERTANK_VOLUMNE = 60000 # ml
 NUTRIENT_AMOUNT = WATERTANK_VOLUMNE * 50 / 20000
+AUTOMATION_TABLES = ['automation_ac', 'automation_fan', 'automation_rooffan', 'automation_led', 'sprayterm', 'spraytime', 'watersupply', 'nutrientsupply']
 DB_CONFIG = {
     "database": "nutrient",
     "user": "root", 

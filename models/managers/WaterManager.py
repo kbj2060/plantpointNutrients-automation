@@ -6,9 +6,7 @@ import time
 from api import post_automation_history, post_report
 from models.SensorModels import WaterLevel
 from models.managers.ManagerBase import ManagerBase
-
 from halo import Halo
-
 from utils import DB_date
 
 class WaterManager(ManagerBase):

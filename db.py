@@ -24,26 +24,25 @@ class MysqlController:
         self.conn.commit()
 
     def select_machines(self):
-        sql = (f"SELECT machine.id AS machine_id, machine.pin AS machine_pin, machine.name AS machine_name, machine.`createdAt` AS `machine_createdAt`" 
-                "FROM machine")
+        sql = (f"SELECT machine.id AS id, machine.pin AS pin, machine.name AS name, machine.`createdAt` AS createdAt FROM machine")
         self.curs.execute(sql)
         return self.curs.fetchall()
 
-    def select_sensor(self, sensor):
-        sql = (f"SELECT sensor.id AS id, sensor.pin AS pin, sensor.name AS name, sensor.`createdAt` AS createdAt FROM sensor WHERE sensor.name = \'{sensor}\'")
-        print(sql)
+    def select_sensor(self, sensor=None):
+        sql = (f"SELECT sensor.id AS id, sensor.pin AS pin, sensor.name AS name, sensor.`createdAt` AS createdAt FROM sensor")
+        if sensor is not None:
+            sql = f"{sql} WHERE sensor.name = \'{sensor}\'"
         self.curs.execute(sql)
-        return self.curs.fetchone()
+        return self.curs.fetchall()
         
     def select_last_switches(self):
         sql = (f"SELECT switch.id AS switch_id, switch.machine_id AS switch_machine_id, switch.status AS switch_status, switch.`controlledBy_id` AS `switch_controlledBy_id`, switch.`createdAt` AS `switch_createdAt` FROM switch INNER JOIN (SELECT max(switch.id) AS maxid, user.name AS name FROM switch INNER JOIN user ON user.id = switch.`controlledBy_id` WHERE user.name = 'auto' GROUP BY switch.machine_id) AS t2 ON switch.id = t2.maxid")
         self.curs.execute(sql)
         return self.curs.fetchall()
 
-    def select_last_automations(self, automation: str):
-        sql = f"SELECT {automation}.id AS {automation}_id, {automation}.quantity AS {automation}_quantity, {automation}.`createdAt` AS `{automation}_createdAt` FROM {automation} ORDER BY {automation}.id DESC LIMIT 1"
+    def select_last_automation(self, automation_table: str):
+        sql = f"SELECT * FROM {automation_table} ORDER BY {automation_table}.id DESC LIMIT 1"
         self.curs.execute(sql)
-        self.conn.commit()
         return self.curs.fetchone()
 
     def select_ac_automation(self):

@@ -2,27 +2,40 @@
 import asyncio
 from api import get_last_automation_date, get_last_automations, post_automation_history, post_report
 from collectors.CollectorBase import CollectorBase
-from models.AutomationModels import AutomationBase, SprayTerm, SprayTime, WaterSupply, NutrientSupply
+from config import AUTOMATION_TABLES
+from models.AutomationModels import AutomationAC, AutomationBase, AutomationFan, AutomationLed, AutomationRoofFan, SprayTerm, SprayTime, WaterSupply, NutrientSupply
 from datetime import datetime
 import pymysql
 from utils import DB_date
 
-AUTOMATION_SUBJECTS = ['nutrientsupply', 'spraytime', 'sprayterm', 'watersupply']
-AUTOMATION_MODELS = [SprayTerm, SprayTime, WaterSupply, NutrientSupply]
-
 class AutomationCollector(CollectorBase):
-    def _classify_automation_model(self, automations: list) -> AutomationBase:
-        results = {}
-        for automation in automations:
-            found_automation_model = next(a_model for a_model in AUTOMATION_MODELS if a_model.get_name() == automation['name'])
-            results[automation['name']] = found_automation_model(**automation)
-        return results
-
+    def _classify_automation_model(self, automations: dict) -> AutomationBase:
+        # results = {}
+        # for automation in automations:
+        #     found_automation_model = next(a_model for a_model in AUTOMATION_MODELS if a_model.get_name() == automation['name'])
+        #     results[automation['name']] = found_automation_model(**automation)
+        # return results
+        return [
+            AutomationAC(**automations['automation_ac']),
+            AutomationFan(**automations['automation_fan']),
+            AutomationRoofFan(**automations['automation_rooffan']),
+            AutomationLed(**automations['automation_led']),
+            SprayTerm(**automations['sprayterm']),
+            SprayTime(**automations['spraytime']),
+            NutrientSupply(**automations['nutrientsupply']),
+            WaterSupply(**automations['watersupply'])
+        ]
+        
+    
     def _get_automations(self) -> dict:
-        try:
-            return [{**asyncio.run(get_last_automations(model.get_name())), 'name': model.get_name()} for model in AUTOMATION_MODELS]
-        except:
-            self.error_handling('데이터 쿼리')
+        results = {}
+        for automation_table in AUTOMATION_TABLES:
+            results[automation_table] = self.select_last_automation(automation_table)
+        return results
+        # try:
+        #     return [{**asyncio.run(get_last_automations(model.get_name())), 'name': model.get_name()} for model in AUTOMATION_MODELS]
+        # except:
+        #     self.error_handling('데이터 쿼리')
     
     @classmethod           
     def get_last_activated(self, subject, isCompleted=False):
@@ -41,9 +54,11 @@ class AutomationCollector(CollectorBase):
         
     def get(self):
         automations = self._get_automations()
-        automation_models = self._classify_automation_model(automations)
-        if not (len(automations) == len(automation_models) == len(AUTOMATION_SUBJECTS)):
-            self.error_handling('Automation 데이터 검증')
-        automation_models['spray_activatedAt'] = self.get_last_activated('spray')['createdAt']
-        automation_models['watersupply_activatedAt'] = self.get_last_activated('watersupply')['createdAt']
-        return automation_models
+        print(self._classify_automation_model(automations))
+        # automations = self._get_automations()
+        # automation_models = self._classify_automation_model(automations)
+        # if not (len(automations) == len(automation_models) == len(AUTOMATION_SUBJECTS)):
+        #     self.error_handling('Automation 데이터 검증')
+        # automation_models['spray_activatedAt'] = self.get_last_activated('spray')['createdAt']
+        # automation_models['watersupply_activatedAt'] = self.get_last_activated('watersupply')['createdAt']
+        # return automation_models

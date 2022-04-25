@@ -1,12 +1,10 @@
 import time
-from db import MysqlController
 from models.managers.DeviceManager import DeviceManager
 
 
-class LedManager(DeviceManager, MysqlController):
+class LedManager(DeviceManager):
     def __init__(self) -> None:
         DeviceManager.__init__(self)
-        MysqlController.__init__(self)
         self.last_automation = self.select_led_automation()
         self.state = self.select_current_state('led')
         self.status = self.state['status']

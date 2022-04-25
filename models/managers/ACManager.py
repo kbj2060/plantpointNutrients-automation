@@ -3,10 +3,9 @@ from models.SensorModels import DHT22
 from models.managers.DeviceManager import DeviceManager
 
 
-class ACManager(DeviceManager, MysqlController):
+class ACManager(DeviceManager):
     def __init__(self) -> None:
         DeviceManager.__init__(self)
-        MysqlController.__init__(self)
         self.last_automation = self.select_led_automation()
         self.state = self.select_current_state('airconditioner')
         self.status = self.state['status']

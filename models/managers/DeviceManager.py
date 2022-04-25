@@ -1,9 +1,11 @@
 from abc import abstractmethod
+from db import MysqlController
 from models.Mqtt import MQTT
 
-class DeviceManager(MQTT):
+class DeviceManager(MQTT, MysqlController):
     def __init__(self) -> None:
         MQTT.__init__(self)
+        MysqlController.__init__(self)
         self.off, self.on = 0, 1
         self.last_automation = None
         self.state = None

@@ -1,5 +1,8 @@
 import asyncio
 from api import get_last_automations, post_automation_history, post_report
+from collectors.AutomationCollector import AutomationCollector
+from collectors.SensorCollector import SensorCollector
+from collectors.SwitchCollector import SwitchCollector
 # from collectors.SensorCollector import SensorCollector
 from config import WATERTANK_LIMIT
 # from models.Manager import EnvironmentManager, WaterManager, SprayManager
@@ -34,8 +37,8 @@ class SprayPassException(Exception):
 #         return True
 
 if __name__ == "__main__":
-    l = RoofFanManager()
-    print(l.control())
+    l = AutomationCollector()
+    print(l.get())
 
     # GPIO.setwarnings(False)
     # GPIO.setmode(GPIO.BCM)
