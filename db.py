@@ -3,7 +3,7 @@ from config import DB_CONFIG
 
 class MysqlController:
     def __init__(self):
-        self.conn = pymysql.connect(host='localhost', port=3306, user='root', password='1234', database='nutrient', charset='utf8')
+        self.conn = pymysql.connect(**DB_CONFIG, charset='utf8')
         self.curs = self.conn.cursor(pymysql.cursors.DictCursor)
 
     def get_user_id(self, user_id: int):

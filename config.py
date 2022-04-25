@@ -1,4 +1,4 @@
-SECTION = 's1/d1'
+SECTION = 's1'
 ADDRESS = 'http://mudeulro29.iptime.org:9100'
 #ADDRESS = 'http://127.0.0.1:8000'
 MQTT_HOST = '127.0.0.1'
@@ -21,8 +21,9 @@ WATERTANK_LIMIT = WATERTANK_HEIGHT * 0.1
 WATERTANK_VOLUMNE = 60000 # ml
 NUTRIENT_AMOUNT = WATERTANK_VOLUMNE * 50 / 20000
 DB_CONFIG = {
-    "dbname": "nutrient",
+    "database": "nutrient",
     "user": "root", 
-    "password": "1234", 
+    "port": 3306,
+    "password": "01055646565", 
     "host": "127.0.0.1"
 }

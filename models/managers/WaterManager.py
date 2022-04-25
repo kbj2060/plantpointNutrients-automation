@@ -1,44 +1,15 @@
+
+
 import asyncio
 from datetime import datetime
-from api import post_automation_history, post_report
-from config import WATERTANK_HEIGHT, WATERTANK_LIMIT
-from models.SensorModels import WaterLevel
-from models.SwitchModels import Valve
-from halo import Halo
 import time
-import paho.mqtt.client as mqtt
+from api import post_automation_history, post_report
+from models.SensorModels import WaterLevel
+from models.managers.ManagerBase import ManagerBase
 
-from utils import DB_date, str2datetime
+from halo import Halo
 
-class MQTT():
-    def on_connect(self, client, userdata, flags, rc):
-        if rc == 0:
-            print("MQTT connected")
-        else:
-            print("Bad connection Returned code=", rc)
-
-    def on_disconnect(self, client, userdata, flags, rc=0):
-        print("MQTT Disconnected")
-        print("-----------------------------------------------------")
-
-    def on_publish(self, client, userdata, mid):
-        print("In on_pub callback mid= ", mid)
-        
-class ManagerBase:
-    def __init__(self, switches: dict, automations: dict, sensors: dict) -> None:
-        self.switches = switches
-        self.automations = automations
-        self.sensors = sensors
-
-    def _find_switch(self, name):
-        return self.switches[name]
-
-    def _find_automation(self, name):
-        return self.automations[name]
-
-    def _find_sensor(self, name):
-        return self.sensors[name]
-
+from utils import DB_date
 
 class WaterManager(ManagerBase):
     def __init__(self, switches: dict, automations: dict, sensors: dict) -> None:
@@ -102,49 +73,3 @@ class WaterManager(ManagerBase):
         else:
             print("양액 시스템 상태 양호합니다.")
         print("양액 자동화 시스템 종료합니다.")
-
-
-class SprayManager(ManagerBase):
-    def __init__(self, switches: dict, automations: dict, sensors: dict) -> None:
-        super().__init__(switches, automations, sensors)
-        self.wm = WaterManager(switches, automations, sensors)
-        self.waterpump_1 = self._find_switch(name='waterpump_1')
-        self.waterpump_2 = self._find_switch(name='waterpump_2')
-        self.waterpump_3 = self._find_switch(name='waterpump_3')
-        self.waterpump_sprayer = self._find_switch(name='waterpump_sprayer')
-        self.spraytime = self._find_automation(name='spraytime')
-        self.sprayterm = self._find_automation(name='sprayterm')
-
-    def check_term(self):
-        last_term = (datetime.now() - str2datetime(self.automations['spray_activatedAt'])).total_seconds()/60
-        if  round(last_term) >= self.sprayterm.period:
-            return True
-
-    def spray(self, waterpump, operating_time: int):
-        spinner = Halo()
-        spinner.info(text=f" 스프레이 작동 중입니다..")
-        waterpump.on()
-        time.sleep(operating_time)
-        waterpump.off()
-        time.sleep(1)
-        
-    def control(self):
-        print("스프레이 자동화 시작합니다.")
-        if self.check_term():
-            asyncio.run(post_automation_history(subject='spray', createdAt= DB_date(datetime.now()), isCompleted=False))
-            self.spray(self.waterpump_1, int(self.spraytime.period))
-            self.spray(self.waterpump_2, int(self.spraytime.period) + 2)
-            self.spray(self.waterpump_3, int(self.spraytime.period) + 4)
-            print("스프레이 자동화 종료됩니다.")
-            asyncio.run(post_automation_history(subject='spray', createdAt= DB_date(datetime.now()), isCompleted=True))
-        else:
-            print("스프레이 자동화 작동될 시간이 아닙니다.")
-
-
-class EnvironmentManager(ManagerBase):
-    def __init__(self, sensors: dict) -> None:
-        self.sensors = sensors
-
-    def measure_environment(self):
-        dht = self._find_sensor('dht22')
-        dht.post_humidity_temperature()

@@ -14,24 +14,24 @@ from utils import DB_date, str2datetime
 class SprayPassException(Exception):
     pass
 
-def check_spray_condition():
-    sprayterm = asyncio.run(get_last_automations('sprayterm'))['period']
-    spray_last_activated = AutomationCollector.get_last_activated('spray')['createdAt']
-    print(f"마지막 작동 시간은 {spray_last_activated} 입니다.")
-    last_term = (datetime.now() - str2datetime(spray_last_activated)).total_seconds()/60
-    if round(last_term) >= sprayterm:
-        return True
+# def check_spray_condition():
+#     sprayterm = asyncio.run(get_last_automations('sprayterm'))['period']
+#     spray_last_activated = AutomationCollector.get_last_activated('spray')['createdAt']
+#     print(f"마지막 작동 시간은 {spray_last_activated} 입니다.")
+#     last_term = (datetime.now() - str2datetime(spray_last_activated)).total_seconds()/60
+#     if round(last_term) >= sprayterm:
+#         return True
 
-def check_water_condition():
-    water_last_activated = AutomationCollector.get_last_activated('watersupply', isCompleted= True)
-    if water_last_activated['isCompleted']:
-        return True
+# def check_water_condition():
+#     water_last_activated = AutomationCollector.get_last_activated('watersupply', isCompleted= True)
+#     if water_last_activated['isCompleted']:
+#         return True
 
-def check_waterlevel_condition(waterlevel_sensor):
-    if not waterlevel_sensor.get_waterlevel():
-        return True
+# def check_waterlevel_condition(waterlevel_sensor):
+#     if not waterlevel_sensor.get_waterlevel():
+#         return True
 
-from models.DeviceManager import LedManager
+from models.managers.LedManager import LedManager
 
 if __name__ == "__main__":
     l = LedManager()
