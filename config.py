@@ -24,6 +24,6 @@ DB_CONFIG = {
     "database": "nutrient",
     "user": "root", 
     "port": 3306,
-    "password": "01055646565", 
+    "password": "1234", 
     "host": "127.0.0.1"
 }

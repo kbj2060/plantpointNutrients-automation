@@ -7,6 +7,8 @@ from config import WATERTANK_LIMIT
 # from collectors.SwitchCollector import SwitchCollector
 from datetime import datetime
 from db import MysqlController
+from models.managers.FanManager import FanManager
+from models.managers.RoofFanManager import RoofFanManager
 # import RPi.GPIO as GPIO
 from utils import DB_date, str2datetime
 
@@ -31,11 +33,9 @@ class SprayPassException(Exception):
 #     if not waterlevel_sensor.get_waterlevel():
 #         return True
 
-from models.managers.LedManager import LedManager
-
 if __name__ == "__main__":
-    l = LedManager()
-    l.led_control()
+    l = RoofFanManager()
+    print(l.control())
 
     # GPIO.setwarnings(False)
     # GPIO.setmode(GPIO.BCM)

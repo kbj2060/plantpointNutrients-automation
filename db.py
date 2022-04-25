@@ -40,8 +40,23 @@ class MysqlController:
         self.conn.commit()
         return self.curs.fetchone()
 
+    def select_ac_automation(self):
+        sql = (f"SELECT automation_ac.id AS id, automation_ac.start AS start, automation_ac.end AS end, automation_ac.active AS active, automation_ac.`createdAt` AS `createdAt` FROM automation_ac ORDER BY automation_ac.id DESC LIMIT 1")
+        self.curs.execute(sql)
+        return self.curs.fetchone()
+
     def select_led_automation(self):
         sql = (f"SELECT automation_led.id AS id, automation_led.start AS start, automation_led.end AS end, automation_led.active AS active, automation_led.`createdAt` AS `createdAt` FROM automation_led ORDER BY automation_led.id DESC LIMIT 1")
+        self.curs.execute(sql)
+        return self.curs.fetchone()
+
+    def select_fan_automation(self):
+        sql = (f"SELECT automation_fan.id AS id, automation_fan.term AS term, automation_fan.active AS active, automation_fan.`createdAt` AS `createdAt` FROM automation_fan ORDER BY automation_fan.id DESC LIMIT 1")
+        self.curs.execute(sql)
+        return self.curs.fetchone()
+
+    def select_rooffan_automation(self):
+        sql = (f"SELECT automation_rooffan.id AS id, automation_rooffan.term AS term, automation_rooffan.active AS active, automation_rooffan.`createdAt` AS `createdAt` FROM automation_rooffan ORDER BY automation_rooffan.id DESC LIMIT 1")
         self.curs.execute(sql)
         return self.curs.fetchone()
 
