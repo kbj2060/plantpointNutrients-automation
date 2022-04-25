@@ -6,10 +6,24 @@ from models.SensorModels import WaterLevel
 from models.SwitchModels import Valve
 from halo import Halo
 import time
+import paho.mqtt.client as mqtt
 
 from utils import DB_date, str2datetime
 
+class MQTT():
+    def on_connect(self, client, userdata, flags, rc):
+        if rc == 0:
+            print("MQTT connected")
+        else:
+            print("Bad connection Returned code=", rc)
 
+    def on_disconnect(self, client, userdata, flags, rc=0):
+        print("MQTT Disconnected")
+        print("-----------------------------------------------------")
+
+    def on_publish(self, client, userdata, mid):
+        print("In on_pub callback mid= ", mid)
+        
 class ManagerBase:
     def __init__(self, switches: dict, automations: dict, sensors: dict) -> None:
         self.switches = switches

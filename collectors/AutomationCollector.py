@@ -4,8 +4,9 @@ from api import get_last_automation_date, get_last_automations, post_automation_
 from collectors.CollectorBase import CollectorBase
 from models.AutomationModels import AutomationBase, SprayTerm, SprayTime, WaterSupply, NutrientSupply
 from datetime import datetime
-
+import pymysql
 from utils import DB_date
+
 AUTOMATION_SUBJECTS = ['nutrientsupply', 'spraytime', 'sprayterm', 'watersupply']
 AUTOMATION_MODELS = [SprayTerm, SprayTime, WaterSupply, NutrientSupply]
 

@@ -1,12 +1,13 @@
 import asyncio
 from api import get_last_automations, post_automation_history, post_report
-from collectors.SensorCollector import SensorCollector
+# from collectors.SensorCollector import SensorCollector
 from config import WATERTANK_LIMIT
-from models.Manager import EnvironmentManager, WaterManager, SprayManager
-from collectors.AutomationCollector import AutomationCollector
-from collectors.SwitchCollector import SwitchCollector
+# from models.Manager import EnvironmentManager, WaterManager, SprayManager
+# from collectors.AutomationCollector import AutomationCollector
+# from collectors.SwitchCollector import SwitchCollector
 from datetime import datetime
-import RPi.GPIO as GPIO
+from db import MysqlController
+# import RPi.GPIO as GPIO
 from utils import DB_date, str2datetime
 
 
@@ -30,34 +31,38 @@ def check_waterlevel_condition(waterlevel_sensor):
     if not waterlevel_sensor.get_waterlevel():
         return True
 
+from models.DeviceManager import LedManager
 
 if __name__ == "__main__":
-    GPIO.setwarnings(False)
-    GPIO.setmode(GPIO.BCM)
-    print(f"DATE: {datetime.now()}")
-    print("양액 자동화 시스템 시작합니다.")
+    l = LedManager()
+    l.led_control()
+
+    # GPIO.setwarnings(False)
+    # GPIO.setmode(GPIO.BCM)
+    # print(f"DATE: {datetime.now()}")
+    # print("양액 자동화 시스템 시작합니다.")
     
-    sensor_models = SensorCollector().get()
+    # sensor_models = SensorCollector().get()
 
-    em = EnvironmentManager(sensor_models)
-    em.measure_environment()
+    # em = EnvironmentManager(sensor_models)
+    # em.measure_environment()
 
-    automation_models = AutomationCollector().get()
-    switch_models = SwitchCollector().get()
+    # automation_models = AutomationCollector().get()
+    # switch_models = SwitchCollector().get()
 
-    if check_waterlevel_condition(sensor_models['lower_waterlevel']):
-        wm = WaterManager(switch_models, automation_models, sensor_models)
-        wm.control()
-    else: print("수급 작동 조건이 충족되지 않았습니다.")
+    # if check_waterlevel_condition(sensor_models['lower_waterlevel']):
+    #     wm = WaterManager(switch_models, automation_models, sensor_models)
+    #     wm.control()
+    # else: print("수급 작동 조건이 충족되지 않았습니다.")
 
-    if check_spray_condition() and check_water_condition():
-        sm = SprayManager(switch_models, automation_models, sensor_models)
-        sm.control()
-    else: print("스프레이 작동 조건이 충족되지 않았습니다.")
+    # if check_spray_condition() and check_water_condition():
+    #     sm = SprayManager(switch_models, automation_models, sensor_models)
+    #     sm.control()
+    # else: print("스프레이 작동 조건이 충족되지 않았습니다.")
     
-    print('자동화 시스템이 시스템 에러로 인해 중단되었습니다.')
-    now = DB_date(datetime.now())
-    asyncio.run(post_automation_history(subject='error', createdAt=now, isCompleted=False))
-    asyncio.run(post_report(lv=3, problem='자동화 시스템이 시스템 에러로 인해 중단되었습니다.'))
+    # print('자동화 시스템이 시스템 에러로 인해 중단되었습니다.')
+    # now = DB_date(datetime.now())
+    # asyncio.run(post_automation_history(subject='error', createdAt=now, isCompleted=False))
+    # asyncio.run(post_report(lv=3, problem='자동화 시스템이 시스템 에러로 인해 중단되었습니다.'))
     
-    GPIO.cleanup()
+    # GPIO.cleanup()
