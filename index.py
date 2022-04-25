@@ -47,6 +47,7 @@ if __name__ == "__main__":
     # em = EnvironmentManager(sensor_models)
     # em.measure_environment()
 
+
     # automation_models = AutomationCollector().get()
     # switch_models = SwitchCollector().get()
 
