@@ -62,32 +62,40 @@ class RangeModel:
 class NutrientSupply(QuantityModel):
     def __init__(self, id: int, quantity: int, createdAt: str) -> None:
         super().__init__(id, quantity, createdAt)
+        self.name = 'nutrientsupply'
 
 class WaterSupply(QuantityModel):
     def __init__(self, id: int, quantity: int, createdAt: str) -> None:
         super().__init__(id, quantity, createdAt)
+        self.name = 'watersupply'
 
 class SprayTime(PeriodModel):
     def __init__(self, id: int, period: int, createdAt: str) -> None:
         super().__init__(id, period, createdAt)
+        self.name = 'spraytime'
 
 class SprayTerm(PeriodModel):
     def __init__(self, id: int, period: int, createdAt: str) -> None:
         super().__init__(id, period, createdAt)
+        self.name = 'sprayterm'
 
 class AutomationLed(RangeModel):
     def __init__(self, id: int, start: int, end: int, active: bool, createdAt: datetime) -> None:
         super().__init__(id, start, end, active, createdAt)
+        self.name = 'automation_led'
 
 class AutomationAC(RangeModel):
     def __init__(self, id: int, start: str, end: str, active: bool, createdAt: datetime) -> None:
         super().__init__(id, start, end, active, createdAt)
+        self.name = 'automation_ac'
 
 class AutomationFan(TermModel):
     def __init__(self, id: int, term: int, active: bool, createdAt: datetime) -> None:
         super().__init__(id, term, active, createdAt)
+        self.name = 'automation_fan'
 
 class AutomationRoofFan(TermModel):
     def __init__(self, id: int, term: int, active: bool, createdAt: datetime) -> None:
         super().__init__(id, term, active, createdAt)
+        self.name = 'automation_rooffan'
 

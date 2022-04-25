@@ -12,6 +12,7 @@ from datetime import datetime
 from db import MysqlController
 from models.managers.FanManager import FanManager
 from models.managers.RoofFanManager import RoofFanManager
+from models.managers.WaterManager import WaterManager
 # import RPi.GPIO as GPIO
 from utils import DB_date, str2datetime
 
@@ -37,8 +38,12 @@ class SprayPassException(Exception):
 #         return True
 
 if __name__ == "__main__":
-    l = AutomationCollector()
-    print(l.get())
+    am = AutomationCollector().get()
+    sw = SwitchCollector().get()
+    ss = SensorCollector().get()
+
+    l = WaterManager(switches=sw, automations=am, sensors=ss)
+    print(l.bottom_waterlevel.name)
 
     # GPIO.setwarnings(False)
     # GPIO.setmode(GPIO.BCM)

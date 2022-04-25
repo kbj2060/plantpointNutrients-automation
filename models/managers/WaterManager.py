@@ -10,18 +10,20 @@ from halo import Halo
 from utils import DB_date
 
 class WaterManager(ManagerBase):
-    def __init__(self, switches: dict, automations: dict, sensors: dict) -> None:
+    def __init__(self, switches: list, automations: list, sensors: list) -> None:
         super().__init__(switches, automations, sensors)
-        self.waterpump_center = self._find_switch(name='waterpump_center')
         self.valve_in = self._find_switch(name='valve_in')
         self.valve_out = self._find_switch(name='valve_out')
         self.waterpump_a = self._find_switch(name='waterpump_a')
         self.waterpump_b = self._find_switch(name='waterpump_b')
+        self.waterpump_center = self._find_switch(name='waterpump_center')
+
         self.watersupply = self._find_automation(name='watersupply')
         self.nutrientsupply = self._find_automation(name='nutrientsupply')
-        self.upper_waterlevel = self._find_sensor(name='upper_waterlevel')
+
+        self.top_waterlevel = self._find_sensor(name='top_waterlevel')
         self.middle_waterlevel = self._find_sensor(name='middle_waterlevel')
-        self.lower_waterlevel = self._find_sensor(name='lower_waterlevel')
+        self.bottom_waterlevel = self._find_sensor(name='bottom_waterlevel')
 
     def empty_tank(self):
         spinner = Halo()

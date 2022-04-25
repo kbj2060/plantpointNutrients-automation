@@ -54,7 +54,7 @@ class AutomationCollector(CollectorBase):
         
     def get(self):
         automations = self._get_automations()
-        print(self._classify_automation_model(automations))
+        return self._classify_automation_model(automations)
         # automations = self._get_automations()
         # automation_models = self._classify_automation_model(automations)
         # if not (len(automations) == len(automation_models) == len(AUTOMATION_SUBJECTS)):
