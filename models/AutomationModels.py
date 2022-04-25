@@ -48,7 +48,6 @@ class NutrientSupply(QuantityModel):
     def __init__(self, id: int, quantity: int, createdAt: str, name: str) -> None:
         super().__init__(id, quantity, createdAt, name)
 
-
 class WaterSupply(QuantityModel):
     def __init__(self, id: int, quantity: int, createdAt: str, name: str) -> None:
         super().__init__(id, quantity, createdAt, name)

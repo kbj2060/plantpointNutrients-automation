@@ -19,12 +19,6 @@ class SwitchBase(metaclass=ABCMeta):
     def get_name(cls):
         return cls.__name__.lower()
 
-    # def set_current(self, current):
-    #     self.current = current
-
-    # def get_current(self):
-    #     return self.current.get_current()
-
     def set_switch_info(self, status, poweredAt):
         self.poweredAt = fDBDate(poweredAt)
         self.status = status
@@ -32,18 +26,12 @@ class SwitchBase(metaclass=ABCMeta):
     def on(self):
         GPIO.output(self.pin, GPIO.HIGH)
         time.sleep(0.5)
-        # current = self.get_current()
-        # if current == 0:
-        #     asyncio.run(post_report(lv=3, problem=f"{self.name} 전류 인가 에러"))
         turn_on_log(text=f"{self.name} 켜졌습니다.")
         asyncio.run(post_switch(name=self.name, machine_id=self.id, status=1, controlledBy='auto'))
 
     def off(self):
         GPIO.output(self.pin, GPIO.LOW)
         time.sleep(0.5)
-        # current = self.get_current()
-        # if current != 0:
-        #     asyncio.run(post_report(lv=3, problem=f"{self.name} 전류 인가 에러"))
         turn_off_log(text=f"{self.name} 꺼졌습니다.")
         asyncio.run(post_switch(name=self.name, machine_id=self.id, status=0, controlledBy='auto'))
 
@@ -72,4 +60,13 @@ class WaterPump(SwitchBase):
 
 
 class LED(SwitchBase):
+    pass
+
+class Fan(SwitchBase):
+    pass
+
+class RoofFan(SwitchBase):
+    pass
+
+class AirConditioner(SwitchBase):
     pass

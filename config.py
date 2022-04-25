@@ -1,6 +1,6 @@
 SECTION = 's1'
-ADDRESS = 'http://mudeulro29.iptime.org:9100'
-#ADDRESS = 'http://127.0.0.1:8000'
+#ADDRESS = 'http://mudeulro29.iptime.org:9100'
+ADDRESS = 'http://127.0.0.1:8000'
 MQTT_HOST = '127.0.0.1'
 MQTT_PORT = 1883
 CLIENT_ID = 'auto'
@@ -24,6 +24,6 @@ DB_CONFIG = {
     "database": "nutrient",
     "user": "root", 
     "port": 3306,
-    "password": "1234", 
+    "password": "01055646565", 
     "host": "127.0.0.1"
 }

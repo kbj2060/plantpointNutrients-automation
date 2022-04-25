@@ -99,8 +99,12 @@ class DHT22(SensorModel):
     def __init__(self, id: int, name: str, pin: int, createdAt: str) -> None:
         super().__init__(id, name, pin, createdAt)
 
-    def post_humidity_temperature(self):
+    def get_values(self):
         humidity, temperature = dht.read_retry(dht.DHT22, self.pin)
+        return humidity, temperature
+
+    def post_humidity_temperature(self):
+        humidity, temperature = self.get_values()
         print(f"온도 : {temperature} / 습도 : {humidity}")
         if humidity is not None and temperature is not None:
             asyncio.run(post_temperature(temperature))

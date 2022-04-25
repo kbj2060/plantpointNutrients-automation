@@ -1,7 +1,6 @@
-import time
 from db import MysqlController
+from models.SensorModels import DHT22
 from models.managers.DeviceManager import DeviceManager
-from models.managers.EnvironmentManager import EnvironmentManager
 
 
 class ACManager(DeviceManager, MysqlController):
@@ -14,5 +13,6 @@ class ACManager(DeviceManager, MysqlController):
         self.topic = self.make_machine_topic('airconditioner')
 
     def check_condition(self):
-        temperature = EnvironmentManager().measure_environment()
-        return self.last_automation['start'] <= current_time < self.last_automation['end']
+        sensor = self.select_sensor('dht22')
+        humidity, temperature = DHT22(**sensor).get_values()
+        return int(self.last_automation['start']) <= temperature < int(self.last_automation['end'])

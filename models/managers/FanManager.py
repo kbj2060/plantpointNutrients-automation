@@ -11,6 +11,7 @@ class FanManager(DeviceManager, MysqlController):
         DeviceManager.__init__(self)
         MysqlController.__init__(self)
         self.last_automation = self.select_fan_automation()
+        print(self.last_automation)
         self.topic = self.make_machine_topic('fan')
         self.state = self.select_current_state('fan')
         self.status = self.state['status']

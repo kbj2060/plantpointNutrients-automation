@@ -29,6 +29,12 @@ class MysqlController:
         self.curs.execute(sql)
         return self.curs.fetchall()
 
+    def select_sensor(self, sensor):
+        sql = (f"SELECT sensor.id AS id, sensor.pin AS pin, sensor.name AS name, sensor.`createdAt` AS createdAt FROM sensor WHERE sensor.name = \'{sensor}\'")
+        print(sql)
+        self.curs.execute(sql)
+        return self.curs.fetchone()
+        
     def select_last_switches(self):
         sql = (f"SELECT switch.id AS switch_id, switch.machine_id AS switch_machine_id, switch.status AS switch_status, switch.`controlledBy_id` AS `switch_controlledBy_id`, switch.`createdAt` AS `switch_createdAt` FROM switch INNER JOIN (SELECT max(switch.id) AS maxid, user.name AS name FROM switch INNER JOIN user ON user.id = switch.`controlledBy_id` WHERE user.name = 'auto' GROUP BY switch.machine_id) AS t2 ON switch.id = t2.maxid")
         self.curs.execute(sql)

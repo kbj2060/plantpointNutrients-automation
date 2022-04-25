@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from models.managers.Mqtt import MQTT
+from models.Mqtt import MQTT
 
 class DeviceManager(MQTT):
     def __init__(self) -> None:
