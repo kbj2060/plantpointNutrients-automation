@@ -4,8 +4,9 @@ from api import get_last_automation_date, get_last_automations, post_automation_
 from collectors.CollectorBase import CollectorBase
 from models.AutomationModels import AutomationBase, SprayTerm, SprayTime, WaterSupply, NutrientSupply
 from datetime import datetime
-
+import pymysql
 from utils import DB_date
+
 AUTOMATION_SUBJECTS = ['nutrientsupply', 'spraytime', 'sprayterm', 'watersupply']
 AUTOMATION_MODELS = [SprayTerm, SprayTime, WaterSupply, NutrientSupply]
 
@@ -24,13 +25,13 @@ class AutomationCollector(CollectorBase):
             self.error_handling('데이터 쿼리')
     
     @classmethod           
-    def get_last_activated(self, subject):
-        res = asyncio.run(get_last_automation_date(subject))
+    def get_last_activated(self, subject, isCompleted=False):
+        res = asyncio.run(get_last_automation_date(subject, isCompleted))
         if res is None or len(res) == 0:
             asyncio.run(
                 post_automation_history(
                     subject=subject, 
-                    start=DB_date(datetime(1990,1,1)), 
+                    createdAt=DB_date(datetime(1990,1,1)), 
                     isCompleted=False
                     )
                 )
@@ -43,6 +44,6 @@ class AutomationCollector(CollectorBase):
         automation_models = self._classify_automation_model(automations)
         if not (len(automations) == len(automation_models) == len(AUTOMATION_SUBJECTS)):
             self.error_handling('Automation 데이터 검증')
-        automation_models['spray_activatedAt'] = self.get_last_activated('spray')['start']
-        automation_models['watersupply_activatedAt'] = self.get_last_activated('watersupply')['start']
+        automation_models['spray_activatedAt'] = self.get_last_activated('spray')['createdAt']
+        automation_models['watersupply_activatedAt'] = self.get_last_activated('watersupply')['createdAt']
         return automation_models

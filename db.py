@@ -1,15 +1,20 @@
 import pymysql
-from config import db_config
+from config import DB_CONFIG
 
 class MysqlController:
     def __init__(self):
-        self.conn = pymysql.connect(**db_config, charset='utf8')
-        self.curs = self.conn.cursor()
+        self.conn = pymysql.connect(host='localhost', port=3306, user='root', password='1234', database='nutrient', charset='utf8')
+        self.curs = self.conn.cursor(pymysql.cursors.DictCursor)
 
-    def insert_switch(self, machine_id: int, status:bool, controlledBy_id: int):
-        sql = (f"INSERT INTO switch (machine_id, status, `controlledBy_id`)" 
-                f"VALUES (%s, %s, %s)")
-        self.curs.execute(sql, (machine_id, status, controlledBy_id))
+    def get_user_id(self, user_id: int):
+        sql = (f"SELECT * FROM user WHERE name = \"{user_id}\";")
+        self.curs.execute(sql)
+        return self.curs.fetchone()
+
+    def insert_switch(self, machine_id: int, status:bool, controlledBy: str):
+        user_id = self.get_user_id(controlledBy)['id']
+        sql = (f"INSERT INTO switch VALUES (NULL, {machine_id}, {status}, {user_id}, NULL);")
+        self.curs.execute(sql)
         self.conn.commit()
 
     def insert_report(self, lv: str, problem: str):
@@ -25,10 +30,7 @@ class MysqlController:
         return self.curs.fetchall()
 
     def select_last_switches(self):
-        sql = (f"SELECT switch.id AS switch_id, switch.machine_id AS switch_machine_id, switch.status AS switch_status, switch.`controlledBy_id` AS `switch_controlledBy_id`, switch.`createdAt` AS `switch_createdAt`"
-                "FROM switch INNER JOIN (SELECT max(switch.id) AS maxid, user.name AS name"
-                "FROM switch INNER JOIN user ON user.id = switch.`controlledBy_id`"
-                "WHERE user.name = 'auto' GROUP BY switch.machine_id) AS t2 ON switch.id = t2.maxid")
+        sql = (f"SELECT switch.id AS switch_id, switch.machine_id AS switch_machine_id, switch.status AS switch_status, switch.`controlledBy_id` AS `switch_controlledBy_id`, switch.`createdAt` AS `switch_createdAt` FROM switch INNER JOIN (SELECT max(switch.id) AS maxid, user.name AS name FROM switch INNER JOIN user ON user.id = switch.`controlledBy_id` WHERE user.name = 'auto' GROUP BY switch.machine_id) AS t2 ON switch.id = t2.maxid")
         self.curs.execute(sql)
         return self.curs.fetchall()
 
@@ -36,4 +38,14 @@ class MysqlController:
         sql = f"SELECT {automation}.id AS {automation}_id, {automation}.quantity AS {automation}_quantity, {automation}.`createdAt` AS `{automation}_createdAt` FROM {automation} ORDER BY {automation}.id DESC LIMIT 1"
         self.curs.execute(sql)
         self.conn.commit()
+        return self.curs.fetchone()
+
+    def select_led_automation(self):
+        sql = (f"SELECT automation_led.id AS id, automation_led.start AS start, automation_led.end AS end, automation_led.active AS active, automation_led.`createdAt` AS `createdAt` FROM automation_led ORDER BY automation_led.id DESC LIMIT 1")
+        self.curs.execute(sql)
+        return self.curs.fetchone()
+
+    def select_current_state(self, _machine):
+        sql = (f"SELECT switch.id AS id, switch.machine_id AS machine_id, switch.status AS status, switch.`controlledBy_id` AS `controlledBy_id`, switch.`createdAt` AS `createdAt` FROM switch INNER JOIN (SELECT max(switch.id) AS maxid FROM switch INNER JOIN machine ON machine.id = switch.`machine_id` WHERE machine.name = '{_machine}' GROUP BY switch.machine_id) AS t2 ON switch.id = t2.maxid")
+        self.curs.execute(sql)
         return self.curs.fetchone()
