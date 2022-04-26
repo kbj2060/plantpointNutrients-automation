@@ -23,6 +23,11 @@ class MysqlController:
         self.curs.execute(sql, (lv, problem))
         self.conn.commit()
 
+    def insert_automation_history(self, subject, isCompleted):
+        sql = (f"INSERT INTO automation_history VALUES (NULL, {subject}, NULL, {isCompleted})")
+        self.curs.execute(sql)
+        self.conn.commit()
+
     def select_machines(self):
         sql = (f"SELECT machine.id AS id, machine.pin AS pin, machine.name AS name, machine.`createdAt` AS createdAt FROM machine")
         self.curs.execute(sql)

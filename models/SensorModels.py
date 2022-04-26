@@ -82,15 +82,14 @@ class WaterLevel(SensorModel):
     # def measure_waterlevel(self):
     #     return True if GPIO.input(self.pin) else False
 
-    def get_waterlevel(self):
-        results = []
-        for _ in itertools.repeat(None, 5):
-            results.append(self.measure_waterlevel())
-        if not self.all_equal(results):
-            post_report(lv=2, problem="waterlevel values are not equal")
-            print("수위 센서의 값이 일정하지 않습니다. 확인 바랍니다.")
-            return True if results.count(True) > results.count(False) else False
-        return results[0]
+    def get_waterlevel(self) -> bool:
+        waterlevels = [ self.measure_waterlevel() for _ in itertools.repeat(None, 5) ]
+        return True if waterlevels.count(True) > waterlevels.count(False) else False
+        # if not self.all_equal(results):
+            # post_report(lv=2, problem="waterlevel values are not equal")
+            # print("수위 센서의 값이 일정하지 않습니다. 확인 바랍니다.")
+        #     return True if results.count(True) > results.count(False) else False
+        # return results[0]
 
     def all_equal(self, lst):
         return lst.count(lst[0]) == len(lst)
@@ -103,9 +102,9 @@ class DHT22(SensorModel):
         humidity, temperature = dht.read_retry(dht.DHT22, self.pin)
         return humidity, temperature
 
-    def post_humidity_temperature(self):
-        humidity, temperature = self.get_values()
-        print(f"온도 : {temperature} / 습도 : {humidity}")
-        if humidity is not None and temperature is not None:
-            asyncio.run(post_temperature(temperature))
-            asyncio.run(post_humidity(humidity))
+    # def post_humidity_temperature(self):
+    #     humidity, temperature = self.get_values()
+    #     print(f"온도 : {temperature} / 습도 : {humidity}")
+    #     if humidity is not None and temperature is not None:
+    #         asyncio.run(post_temperature(temperature))
+    #         asyncio.run(post_humidity(humidity))

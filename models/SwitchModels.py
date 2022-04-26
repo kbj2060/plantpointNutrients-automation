@@ -58,6 +58,9 @@ class WaterPump(SwitchBase):
         self.off()
         time.sleep(0.5)
 
+class WaterSpray(SwitchBase):
+    pass
+
 
 class LED(SwitchBase):
     pass
