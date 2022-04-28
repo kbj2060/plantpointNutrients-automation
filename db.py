@@ -13,7 +13,7 @@ class MysqlController:
 
     def insert_switch(self, machine_id: int, status:bool, controlledBy: str):
         user_id = self.get_user_id(controlledBy)['id']
-        sql = (f"INSERT INTO switch VALUES (NULL, {machine_id}, {status}, {user_id}, NULL);")
+        sql = (f"INSERT INTO switch VALUES (NULL, {machine_id}, {status}, {user_id}, NOW());")
         self.curs.execute(sql)
         self.conn.commit()
 
@@ -24,12 +24,14 @@ class MysqlController:
         self.conn.commit()
 
     def insert_automation_history(self, subject, isCompleted):
-        sql = (f"INSERT INTO automation_history VALUES (NULL, {subject}, NULL, {isCompleted})")
+        sql = (f"INSERT INTO automation_history VALUES (NULL, \"{subject}\", NOW(), {isCompleted})")
         self.curs.execute(sql)
         self.conn.commit()
 
-    def select_machines(self):
+    def select_machines(self, machine=None):
         sql = (f"SELECT machine.id AS id, machine.pin AS pin, machine.name AS name, machine.`createdAt` AS createdAt FROM machine")
+        if machine is not None:
+            sql = f"{sql} WHERE machine.name = \'{machine}\'"
         self.curs.execute(sql)
         return self.curs.fetchall()
 
@@ -39,6 +41,11 @@ class MysqlController:
             sql = f"{sql} WHERE sensor.name = \'{sensor}\'"
         self.curs.execute(sql)
         return self.curs.fetchall()
+    
+    def select_last_temperature(self):
+        sql = (f"SELECT value FROM temperature ORDER BY temperature.id DESC LIMIT 1")
+        self.curs.execute(sql)
+        return self.curs.fetchone()
         
     def select_last_switches(self):
         sql = (f"SELECT switch.id AS switch_id, switch.machine_id AS switch_machine_id, switch.status AS switch_status, switch.`controlledBy_id` AS `switch_controlledBy_id`, switch.`createdAt` AS `switch_createdAt` FROM switch INNER JOIN (SELECT max(switch.id) AS maxid, user.name AS name FROM switch INNER JOIN user ON user.id = switch.`controlledBy_id` WHERE user.name = 'auto' GROUP BY switch.machine_id) AS t2 ON switch.id = t2.maxid")
@@ -47,6 +54,11 @@ class MysqlController:
 
     def select_last_automation(self, automation_table: str):
         sql = f"SELECT * FROM {automation_table} ORDER BY {automation_table}.id DESC LIMIT 1"
+        self.curs.execute(sql)
+        return self.curs.fetchone()
+
+    def select_last_automation_activated(self, subject: str):
+        sql = f"SELECT * FROM automation_history WHERE isCompleted = 1 AND subject = \"{subject}\" ORDER BY id DESC LIMIT 1"
         self.curs.execute(sql)
         return self.curs.fetchone()
 

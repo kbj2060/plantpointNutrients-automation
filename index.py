@@ -10,14 +10,21 @@ from config import WATERTANK_LIMIT
 # from collectors.SwitchCollector import SwitchCollector
 from datetime import datetime
 from db import MysqlController
+from logger import logger
+from models.Mqtt import MQTT
+from models.managers.ACManager import ACManager
+from models.managers.DeviceManager import DeviceManager
+from models.managers.EnvironmentManager import EnvironmentManager
 from models.managers.FanManager import FanManager
+from models.managers.LedManager import LedManager
 from models.managers.RoofFanManager import RoofFanManager
+from models.managers.SprayManager import SprayManager
 from models.managers.WaterManager import WaterManager
 # import RPi.GPIO as GPIO
-from utils import DB_date, str2datetime
+from utils import DB_date
 
 
-class SprayPassException(Exception):
+class UnknownException(Exception):
     pass
 
 # def check_spray_condition():
@@ -37,41 +44,38 @@ class SprayPassException(Exception):
 #     if not waterlevel_sensor.get_waterlevel():
 #         return True
 
+def control_machines():
+    managers = [FanManager, RoofFanManager, ACManager, LedManager]
+    for manager in managers:
+        asyncio.run(manager().control())
+
 if __name__ == "__main__":
-    am = AutomationCollector().get()
-    sw = SwitchCollector().get()
-    ss = SensorCollector().get()
+    try:
+        # GPIO.setwarnings(False)
+        # GPIO.setmode(GPIO.BCM)
+        logger.info(f"DATE: {datetime.now()}")
+        logger.info("양액 자동화 시스템 시작합니다.")
 
-    l = WaterManager(switches=sw, automations=am, sensors=ss)
-    print(l.bottom_waterlevel.name)
+        control_machines()
 
-    # GPIO.setwarnings(False)
-    # GPIO.setmode(GPIO.BCM)
-    # print(f"DATE: {datetime.now()}")
-    # print("양액 자동화 시스템 시작합니다.")
-    
-    # sensor_models = SensorCollector().get()
+        am = AutomationCollector().get()
+        sw = SwitchCollector().get()
+        ss = SensorCollector().get()
 
-    # em = EnvironmentManager(sensor_models)
-    # em.measure_environment()
+        # em = EnvironmentManager(ss)
+        # em.measure_and_post()
 
+        sm = SprayManager(switches=sw, automations=am, sensors=ss)
+        sm.control()
 
-    # automation_models = AutomationCollector().get()
-    # switch_models = SwitchCollector().get()
+        wm = WaterManager(switches=sw, automations=am, sensors=ss)
+        wm.control()
 
-    # if check_waterlevel_condition(sensor_models['lower_waterlevel']):
-    #     wm = WaterManager(switch_models, automation_models, sensor_models)
-    #     wm.control()
-    # else: print("수급 작동 조건이 충족되지 않았습니다.")
-
-    # if check_spray_condition() and check_water_condition():
-    #     sm = SprayManager(switch_models, automation_models, sensor_models)
-    #     sm.control()
-    # else: print("스프레이 작동 조건이 충족되지 않았습니다.")
-    
-    # print('자동화 시스템이 시스템 에러로 인해 중단되었습니다.')
-    # now = DB_date(datetime.now())
-    # asyncio.run(post_automation_history(subject='error', createdAt=now, isCompleted=False))
-    # asyncio.run(post_report(lv=3, problem='자동화 시스템이 시스템 에러로 인해 중단되었습니다.'))
-    
-    # GPIO.cleanup()
+    except UnknownException:
+        logger.error('자동화 시스템이 알 수 없는 에러로 인해 중단되었습니다.')
+        asyncio.run(post_automation_history(subject='spray', createdAt=DB_date(datetime.now()), isCompleted=False))
+        asyncio.run(post_automation_history(subject='water', createdAt=DB_date(datetime.now()), isCompleted=False))
+        asyncio.run(post_report(lv=3, problem='자동화 시스템이 알 수 없는 에러로 인해 중단되었습니다.'))
+    finally:
+        # GPIO.cleanup()
+        MQTT().client.disconnect()

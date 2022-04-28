@@ -1,20 +1,26 @@
-import asyncio
+from config import ON, OFF
 # import RPi.GPIO as GPIO
-from abc import ABCMeta
-from api import post_report, post_switch
 from config import NUTRIENT_AMOUNT
-from utils import fDBDate, turn_off_log, turn_on_log
+from db import MysqlController
+from logger import logger
+from models.Mqtt import MQTT
+from models.WebsocketModel import send_socket
+from utils import fDBDate
+import json
 import time
 
-class SwitchBase(metaclass=ABCMeta):
+class SwitchBase(MQTT, MysqlController):
     def __init__(self, id: int, pin:int, name: str, createdAt: str) -> None:
         # GPIO.setup(pin, GPIO.OUT, initial=GPIO.LOW)
+        MQTT.__init__(self)
+        MysqlController.__init__(self)
         self.id = id
         self.name = name
         self.pin = pin
         self.poweredAt = None
         self.status = None
-    
+        self.topic = self.make_machine_topic(self.name)
+
     @classmethod
     def get_name(cls):
         return cls.__name__.lower()
@@ -23,39 +29,32 @@ class SwitchBase(metaclass=ABCMeta):
         self.poweredAt = fDBDate(poweredAt)
         self.status = status
 
-    def on(self):
+    async def on(self):
         # GPIO.output(self.pin, GPIO.HIGH)
-        time.sleep(0.5)
-        turn_on_log(text=f"{self.name} 켜졌습니다.")
-        asyncio.run(post_switch(name=self.name, machine_id=self.id, status=1, controlledBy='auto'))
+        await send_socket(json.dumps({ f"{self.name}" : True }))
+        self.insert_switch(machine_id=self.id, controlledBy='auto', status=ON)
+        self.client.publish(self.topic, ON)
+        logger.on(text=f"{self.name} 켜졌습니다.")
 
-    def off(self):
+    async def off(self):
         # GPIO.output(self.pin, GPIO.LOW)
-        time.sleep(0.5)
-        turn_off_log(text=f"{self.name} 꺼졌습니다.")
-        asyncio.run(post_switch(name=self.name, machine_id=self.id, status=0, controlledBy='auto'))
-
-    def pprint(self):
-        print({
-            'id': self.id,
-            'name': self.name,
-            'pin': self.pin,
-            'poweredAt': self.poweredAt,
-            'status': self.status
-        })
+        await send_socket(json.dumps({ f"{self.name}" : False }))
+        self.insert_switch(machine_id=self.id, controlledBy='auto', status=OFF)
+        self.client.publish(self.topic, OFF)
+        logger.off(text=f"{self.name} 꺼졌습니다.")
 
 
 class Valve(SwitchBase):
     pass
 
 class WaterPump(SwitchBase):
-    def supply_nutrient(self):
+    async def supply_nutrient(self):
         # 20L 당 50ml 양액
         velocity = 40 # ml/sec
         operating_time = NUTRIENT_AMOUNT / velocity
-        self.on()
+        await self.on()
         time.sleep(operating_time)
-        self.off()
+        await self.off()
         time.sleep(0.5)
 
 class WaterSpray(SwitchBase):

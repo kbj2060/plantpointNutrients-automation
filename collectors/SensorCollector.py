@@ -1,17 +1,11 @@
 import asyncio
 from api import get_sensors
 from collectors.CollectorBase import CollectorBase
-from models.SensorModels import Current, SensorModel, WaterLevel, DHT22
-from models.SwitchModels import SwitchBase
+from models.SensorModels import WaterLevel, DHT22
 
 
 class SensorCollector(CollectorBase):
     def _classify_machine_model(self, sensors):
-        # results = {}
-        # for sensor in sensors:
-        #     found_automation_model = next(model for model in SENSOR_MODELS if model.get_name() in sensor['name'])
-        #     results[sensor['name']] = found_automation_model(**sensor)
-        # return results
         results = []
         for sensor in sensors:
             name = sensor['name']

@@ -7,6 +7,7 @@ from api import post_humidity, post_temperature, post_report
 from config import CURRENT_LIMIT, SPICLK, SPICS, SPIMISO, SPIMOSI
 import time
 import itertools
+from logger import logger
 # import Adafruit_GPIO.SPI as SPI
 from utils import detect_outlier
 
@@ -46,7 +47,7 @@ from utils import detect_outlier
 #         adcout <<= 1       # first bit is 'null' so drop it
 #         return adcout      # adcout는 0부터 4095까지 값을 갖는다.
 
-class SensorModel:
+class SensorBase:
     def __init__(self, id: int, name: str, pin: int, createdAt: str) -> None:
         self.id = id
         self.name = name
@@ -56,7 +57,7 @@ class SensorModel:
     def get_name(cls):
         return cls.__name__.lower()
 
-class Current(SensorModel):
+class Current(SensorBase):
     def __init__(self, id: int, name: str, pin: int, createdAt: str) -> None:
         super().__init__(id, name, pin, createdAt)
         # self.adc = MCP3208(pin)
@@ -74,13 +75,14 @@ class Current(SensorModel):
             results = [item for item in results if item not in outliers]
         return sum(results)/len(results)
 
-class WaterLevel(SensorModel):
+class WaterLevel(SensorBase):
     def __init__(self, id: int, name: str, pin: int, createdAt: str) -> None:
         super().__init__(id, name, pin, createdAt)
         # GPIO.setup(self.pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
-    # def measure_waterlevel(self):
-    #     return True if GPIO.input(self.pin) else False
+    def measure_waterlevel(self):
+        pass
+        # return True if GPIO.input(self.pin) else False
 
     def get_waterlevel(self) -> bool:
         waterlevels = [ self.measure_waterlevel() for _ in itertools.repeat(None, 5) ]
@@ -94,7 +96,7 @@ class WaterLevel(SensorModel):
     def all_equal(self, lst):
         return lst.count(lst[0]) == len(lst)
 
-class DHT22(SensorModel):
+class DHT22(SensorBase):
     def __init__(self, id: int, name: str, pin: int, createdAt: str) -> None:
         super().__init__(id, name, pin, createdAt)
 
@@ -102,9 +104,9 @@ class DHT22(SensorModel):
         humidity, temperature = dht.read_retry(dht.DHT22, self.pin)
         return humidity, temperature
 
-    # def post_humidity_temperature(self):
-    #     humidity, temperature = self.get_values()
-    #     print(f"온도 : {temperature} / 습도 : {humidity}")
-    #     if humidity is not None and temperature is not None:
-    #         asyncio.run(post_temperature(temperature))
-    #         asyncio.run(post_humidity(humidity))
+    def post_values(self):
+        humidity, temperature = self.get_values()
+        logger.info(f"온도 : {temperature} / 습도 : {humidity}")
+        if humidity is not None and temperature is not None:
+            asyncio.run(post_temperature(temperature))
+            asyncio.run(post_humidity(humidity))

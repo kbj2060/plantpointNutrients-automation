@@ -5,7 +5,6 @@ from utils import fDBDate
 class AutomationBase:
     def __init__(self, id: int, createdAt: datetime) -> None:
         self.id = id
-        # self.createdAt = fDBDate(createdAt)
         self.createdAt = createdAt
 
     @classmethod
@@ -21,13 +20,6 @@ class QuantityModel(AutomationBase):
     def get(self):
         return self.quantity
 
-    def pprint(self):
-        print({
-            'id': self.id,
-            'quantity': self.quantity,
-            'createdAt': self.createdAt
-        })
-
 class PeriodModel(AutomationBase):
     def __init__(self, id: int, period: int, createdAt: datetime) -> None:
         super().__init__(id, createdAt)
@@ -35,13 +27,6 @@ class PeriodModel(AutomationBase):
 
     def get(self):
         return self.period
-
-    def pprint(self):
-        print({
-            'id': self.id,
-            'period': self.period,
-            'createdAt': self.createdAt
-        })
 
 class TermModel:
     def __init__(self, id: int, term: int, active: bool, createdAt: datetime) -> None:

@@ -1,17 +1,16 @@
 import time
+from config import MAX_HOUR, MIN_HOUR
+from models.SwitchModels import Fan, SwitchBase
 from models.managers.DeviceManager import DeviceManager
-
-
-MIN_HOUR = 0
-MAX_HOUR = 23
 
 class FanManager(DeviceManager):
     def __init__(self) -> None:
         DeviceManager.__init__(self)
+        self.machine_name = 'fan'
+        self.sw: SwitchBase = SwitchBase(**(self.select_machines(machine=self.machine_name)[0]))
         self.last_automation = self.select_fan_automation()
-        print(self.last_automation)
-        self.topic = self.make_machine_topic('fan')
-        self.state = self.select_current_state('fan')
+        self.topic = self.make_machine_topic(self.machine_name)
+        self.state = self.select_current_state(self.machine_name)
         self.status = self.state['status']
         self.term = self.last_automation['term']
 
