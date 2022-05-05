@@ -30,6 +30,10 @@ class WaterManager(ManagerBase):
     def reach_waterlevel(self, value: bool):
         return True if value is True else False
 
+    def check_error(self, arr):
+        success = [[False, False, False],[True, False, False], [True, True, False], [True, True, True]]
+        return True if arr in success else False
+
     async def empty_tank(self):
         logger.info('물탱크 비우기 시작합니다.')
         await self.valve_out.on()
@@ -67,6 +71,10 @@ class WaterManager(ManagerBase):
 
     def control(self):
         bwl = self.bottom_waterlevel.get_waterlevel()
+        mwl = self.middle_waterlevel.get_waterlevel()
+        twl = self.top_waterlevel.get_waterlevel()
+        if not self.check_error([bwl, mwl, twl]):
+            raise WaterException('수위 센서에 문제가 생겼습니다.')
         if not self.reach_waterlevel(bwl):
             self.insert_automation_history(subject='watersupply', isCompleted=False)
             asyncio.run(self.water_tank(self.middle_waterlevel))

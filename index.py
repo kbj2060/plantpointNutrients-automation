@@ -64,11 +64,11 @@ if __name__ == "__main__":
 
     except WaterException:
         logger.error('물 공급 중 에러로 인해 중단되었습니다.')
-    except:
-        logger.error('자동화 시스템이 알 수 없는 에러로 인해 중단되었습니다.')
-        asyncio.run(post_automation_history(subject='spray', createdAt=DB_date(datetime.now()), isCompleted=False))
-        asyncio.run(post_automation_history(subject='water', createdAt=DB_date(datetime.now()), isCompleted=False))
-        asyncio.run(post_report(lv=3, problem='자동화 시스템이 알 수 없는 에러로 인해 중단되었습니다.'))
+#    except:
+#        logger.error('자동화 시스템이 알 수 없는 에러로 인해 중단되었습니다.')
+#        asyncio.run(post_automation_history(subject='spray', createdAt=DB_date(datetime.now()), isCompleted=False))
+#        asyncio.run(post_automation_history(subject='water', createdAt=DB_date(datetime.now()), isCompleted=False))
+#        asyncio.run(post_report(lv=3, problem='자동화 시스템이 알 수 없는 에러로 인해 중단되었습니다.'))
     finally:
         GPIO.cleanup()
         MQTT().client.disconnect()
