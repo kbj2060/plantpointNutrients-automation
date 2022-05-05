@@ -1,14 +1,15 @@
 SECTION = 's1'
-#ADDRESS = 'http://mudeulro29.iptime.org:9100'
-ADDRESS = 'http://127.0.0.1:8000'
-SOCKET_HOST = 'ws://localhost:8000/ws'
+ADDRESS = 'http://125.130.139.190:10002'
+# ADDRESS = 'http://127.0.0.1:8000'
+# SOCKET_HOST = 'ws://localhost:8000/ws'
+SOCKET_HOST = 'ws://125.130.139.190:10002/ws'
 MQTT_HOST = '127.0.0.1'
 MQTT_PORT = 1883
 DB_CONFIG = {
     "database": "nutrient",
     "user": "root", 
     "port": 3306,
-    "password": "01055646565", 
+    "password": "1234", 
     "host": "127.0.0.1"
 }
 AUTOMATION_TABLES = ['automation_ac', 'automation_fan', 'automation_rooffan', 'automation_led', 'sprayterm', 'spraytime', 'watersupply', 'nutrientsupply']
