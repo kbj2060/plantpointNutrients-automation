@@ -1,6 +1,6 @@
 import asyncio
 from halo import Halo
-# import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 # import Adafruit_DHT as dht
 from api import post_humidity, post_temperature, post_report
 # import spidev
@@ -78,11 +78,11 @@ class Current(SensorBase):
 class WaterLevel(SensorBase):
     def __init__(self, id: int, name: str, pin: int, createdAt: str) -> None:
         super().__init__(id, name, pin, createdAt)
-        # GPIO.setup(self.pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+        GPIO.setup(self.pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
     def measure_waterlevel(self):
-        pass
-        # return True if GPIO.input(self.pin) else False
+        return True if GPIO.input(self.pin) else False
+        # pass
 
     def get_waterlevel(self) -> bool:
         waterlevels = [ self.measure_waterlevel() for _ in itertools.repeat(None, 5) ]

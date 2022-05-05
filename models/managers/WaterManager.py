@@ -1,4 +1,5 @@
 from api import post_report
+from entities.error import WaterException
 from logger import logger
 from models.AutomationModels import NutrientSupply, WaterSupply
 from models.SensorModels import WaterLevel
@@ -9,8 +10,6 @@ from config import WATER_TANK_MAX_MINUTES
 import asyncio
 import time
 
-class WaterException(Exception):
-    pass
 
 class WaterManager(ManagerBase):
     def __init__(self, switches: list, automations: list, sensors: list) -> None:

@@ -1,5 +1,5 @@
 from config import ON, OFF
-# import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 from config import NUTRIENT_AMOUNT
 from db import MysqlController
 from logger import logger
@@ -11,7 +11,7 @@ import time
 
 class SwitchBase(MQTT, MysqlController):
     def __init__(self, id: int, pin:int, name: str, createdAt: str) -> None:
-        # GPIO.setup(pin, GPIO.OUT, initial=GPIO.LOW)
+        GPIO.setup(pin, GPIO.OUT, initial=GPIO.LOW)
         MQTT.__init__(self)
         MysqlController.__init__(self)
         self.id = id
@@ -30,14 +30,14 @@ class SwitchBase(MQTT, MysqlController):
         self.status = status
 
     async def on(self):
-        # GPIO.output(self.pin, GPIO.HIGH)
+        GPIO.output(self.pin, GPIO.HIGH)
         await send_socket(json.dumps({ f"{self.name}" : True }))
         self.insert_switch(machine_id=self.id, controlledBy='auto', status=ON)
         self.client.publish(self.topic, ON)
         logger.on(text=f"{self.name} 켜졌습니다.")
 
     async def off(self):
-        # GPIO.output(self.pin, GPIO.LOW)
+        GPIO.output(self.pin, GPIO.LOW)
         await send_socket(json.dumps({ f"{self.name}" : False }))
         self.insert_switch(machine_id=self.id, controlledBy='auto', status=OFF)
         self.client.publish(self.topic, OFF)

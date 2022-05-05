@@ -21,6 +21,6 @@ class Logger:
         self.spinner.succeed(text)
     
     def error(self, text):
-        self.spinner.error(text)
+        self.spinner.fail(text)
 
 logger = Logger()

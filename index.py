@@ -3,29 +3,20 @@ from api import get_last_automations, post_automation_history, post_report
 from collectors.AutomationCollector import AutomationCollector
 from collectors.SensorCollector import SensorCollector
 from collectors.SwitchCollector import SwitchCollector
-# from collectors.SensorCollector import SensorCollector
-from config import WATERTANK_LIMIT
-# from models.Manager import EnvironmentManager, WaterManager, SprayManager
-# from collectors.AutomationCollector import AutomationCollector
-# from collectors.SwitchCollector import SwitchCollector
+
 from datetime import datetime
-from db import MysqlController
 from logger import logger
 from models.Mqtt import MQTT
 from models.managers.ACManager import ACManager
-from models.managers.DeviceManager import DeviceManager
-from models.managers.EnvironmentManager import EnvironmentManager
 from models.managers.FanManager import FanManager
 from models.managers.LedManager import LedManager
 from models.managers.RoofFanManager import RoofFanManager
 from models.managers.SprayManager import SprayManager
 from models.managers.WaterManager import WaterManager
-# import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 from utils import DB_date
+from entities.error import WaterException
 
-
-class UnknownException(Exception):
-    pass
 
 # def check_spray_condition():
 #     sprayterm = asyncio.run(get_last_automations('sprayterm'))['period']
@@ -51,8 +42,8 @@ def control_machines():
 
 if __name__ == "__main__":
     try:
-        # GPIO.setwarnings(False)
-        # GPIO.setmode(GPIO.BCM)
+        GPIO.setwarnings(False)
+        GPIO.setmode(GPIO.BCM)
         logger.info(f"DATE: {datetime.now()}")
         logger.info("양액 자동화 시스템 시작합니다.")
 
@@ -71,11 +62,13 @@ if __name__ == "__main__":
         wm = WaterManager(switches=sw, automations=am, sensors=ss)
         wm.control()
 
-    except UnknownException:
+    except WaterException:
+        logger.error('물 공급 중 에러로 인해 중단되었습니다.')
+    except:
         logger.error('자동화 시스템이 알 수 없는 에러로 인해 중단되었습니다.')
         asyncio.run(post_automation_history(subject='spray', createdAt=DB_date(datetime.now()), isCompleted=False))
         asyncio.run(post_automation_history(subject='water', createdAt=DB_date(datetime.now()), isCompleted=False))
         asyncio.run(post_report(lv=3, problem='자동화 시스템이 알 수 없는 에러로 인해 중단되었습니다.'))
     finally:
-        # GPIO.cleanup()
+        GPIO.cleanup()
         MQTT().client.disconnect()

@@ -12,8 +12,6 @@ import asyncio
 import time
 from utils import DB_date
 
-class SprayExcpetion(Exception):
-    pass
 
 class SprayManager(ManagerBase):
     def __init__(self, switches: List[SwitchBase], automations: List[AutomationBase], sensors: List[SensorBase]) -> None:
