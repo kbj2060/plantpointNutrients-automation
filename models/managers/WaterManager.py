@@ -45,6 +45,9 @@ class WaterManager(ManagerBase):
         logger.info('물탱크 비우기 종료합니다.')
 
     async def water_tank(self, target_waterlevel: WaterLevel):
+        if self.reach_waterlevel(target_waterlevel.get_waterlevel()):
+            logger.info(f'{target_waterlevel.name} 수위를 만족했습니다.')
+            return
         logger.info('물탱크 채우기 시작합니다.')
         await self.valve_in.on()
         await self.waterpump_center.on()
