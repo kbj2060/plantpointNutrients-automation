@@ -56,6 +56,11 @@ class MysqlController:
         sql = f"SELECT * FROM {automation_table} ORDER BY {automation_table}.id DESC LIMIT 1"
         self.curs.execute(sql)
         return self.curs.fetchone()
+    
+    def select_automation_history(self, subject: str):
+        sql = f"SELECT * FROM automation_history WHERE subject = {subject} ORDER BY automation_history.id DESC LIMIT 1"
+        self.curs.execute(sql)
+        return self.curs.fetchone()
 
     def select_last_automation_activated(self, subject: str):
         sql = f"SELECT * FROM automation_history WHERE isCompleted = 1 AND subject = \"{subject}\" ORDER BY id DESC LIMIT 1"
