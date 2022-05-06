@@ -58,7 +58,7 @@ class MysqlController:
         return self.curs.fetchone()
     
     def select_automation_history(self, subject: str):
-        sql = f"SELECT * FROM automation_history WHERE subject = {subject} ORDER BY automation_history.id DESC LIMIT 1"
+        sql = f"SELECT * FROM automation_history WHERE subject = \"{subject}\" ORDER BY automation_history.id DESC LIMIT 1"
         self.curs.execute(sql)
         return self.curs.fetchone()
 
