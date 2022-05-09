@@ -64,6 +64,8 @@ if __name__ == "__main__":
         sm.control()
 
     except WaterException as e:
+        problem = e.args[0]
+        asyncio.run(post_report(lv=3, problem=problem))
         print(e)
     except:
         logger.error('자동화 시스템이 알 수 없는 에러로 인해 중단되었습니다.')
