@@ -8,6 +8,7 @@ from datetime import datetime
 from logger import logger
 from models.Mqtt import MQTT
 from models.managers.ACManager import ACManager
+from models.managers.EnvironmentManager import EnvironmentManager
 from models.managers.FanManager import FanManager
 from models.managers.LedManager import LedManager
 from models.managers.RoofFanManager import RoofFanManager
@@ -53,22 +54,23 @@ if __name__ == "__main__":
         sw = SwitchCollector().get()
         ss = SensorCollector().get()
 
-        # em = EnvironmentManager(ss)
-        # em.measure_and_post()
-
-        sm = SprayManager(switches=sw, automations=am, sensors=ss)
-        sm.control()
+        em = EnvironmentManager(ss)
+        em.measure_and_post()
 
         wm = WaterManager(switches=sw, automations=am, sensors=ss)
         wm.control()
 
-    except WaterException:
-        logger.error('물 공급 중 에러로 인해 중단되었습니다.')
-#    except:
-#        logger.error('자동화 시스템이 알 수 없는 에러로 인해 중단되었습니다.')
-#        asyncio.run(post_automation_history(subject='spray', createdAt=DB_date(datetime.now()), isCompleted=False))
-#        asyncio.run(post_automation_history(subject='water', createdAt=DB_date(datetime.now()), isCompleted=False))
-#        asyncio.run(post_report(lv=3, problem='자동화 시스템이 알 수 없는 에러로 인해 중단되었습니다.'))
+        sm = SprayManager(switches=sw, automations=am, sensors=ss)
+        sm.control()
+
+    except WaterException as e:
+        print(e)
+    except:
+        logger.error('자동화 시스템이 알 수 없는 에러로 인해 중단되었습니다.')
+        asyncio.run(post_automation_history(subject='spray', createdAt=DB_date(datetime.now()), isCompleted=False))
+        asyncio.run(post_automation_history(subject='water', createdAt=DB_date(datetime.now()), isCompleted=False))
+        asyncio.run(post_report(lv=3, problem='자동화 시스템이 알 수 없는 에러로 인해 중단되었습니다.'))
     finally:
         GPIO.cleanup()
+        print("GPIO clean up!")
         MQTT().client.disconnect()

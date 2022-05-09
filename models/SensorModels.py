@@ -1,7 +1,7 @@
 import asyncio
 from halo import Halo
 import RPi.GPIO as GPIO
-# import Adafruit_DHT as dht
+import Adafruit_DHT as dht
 from api import post_humidity, post_temperature, post_report
 # import spidev
 from config import CURRENT_LIMIT, SPICLK, SPICS, SPIMISO, SPIMOSI

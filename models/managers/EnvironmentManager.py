@@ -8,4 +8,4 @@ class EnvironmentManager(ManagerBase):
 
     def measure_and_post(self):
         dht: DHT22 = self._find_sensor('dht22')
-        dht.post_values()()
+        dht.post_values()

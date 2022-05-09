@@ -33,6 +33,10 @@ class WaterManager(ManagerBase):
     def check_error(self, arr):
         success = [[False, False, False],[True, False, False], [True, True, False], [True, True, True]]
         return True if arr in success else False
+    
+    def check_prev_completed(self):
+        prev_auto = self.select_automation_history('watersupply')
+        return prev_auto['isCompleted']
 
     async def empty_tank(self):
         logger.info('물탱크 비우기 시작합니다.')
@@ -50,9 +54,9 @@ class WaterManager(ManagerBase):
 
     async def water_tank(self, target_waterlevel: WaterLevel):
         if self.reach_waterlevel(target_waterlevel.get_waterlevel()):
-            logger.info(f'{target_waterlevel.name} 수위를 만족했습니다.')
-            return
-        logger.info('물탱크 채우기 시작합니다.')
+            raise WaterException(f'이미 {target_waterlevel.name} 수위를 만족합니다. 수위 센서 확인 바랍니다.')
+
+        logger.info(f'{target_waterlevel.name}까지 물탱크 채우기 시작합니다.')
         await self.valve_in.on()
         await self.waterpump_center.on()
         timeout = time.time() + 60 * WATER_TANK_MAX_MINUTES
@@ -67,14 +71,19 @@ class WaterManager(ManagerBase):
         await self.waterpump_center.off()
         await self.valve_in.off()
         time.sleep(1)
-        logger.info('물탱크 채우기 종료합니다.')
+        logger.info(f'{target_waterlevel.name}까지 물탱크 채우기 종료합니다.')
 
     def control(self):
+        if not self.check_prev_completed():
+            raise WaterException('이전 물공급 자동화가 실패되었습니다. 현재 물공급이 불가합니다.')
+
         bwl = self.bottom_waterlevel.get_waterlevel()
         mwl = self.middle_waterlevel.get_waterlevel()
         twl = self.top_waterlevel.get_waterlevel()
+
         if not self.check_error([bwl, mwl, twl]):
             raise WaterException('수위 센서에 문제가 생겼습니다.')
+
         if not self.reach_waterlevel(bwl):
             self.insert_automation_history(subject='watersupply', isCompleted=False)
             asyncio.run(self.water_tank(self.middle_waterlevel))
@@ -84,4 +93,5 @@ class WaterManager(ManagerBase):
             self.insert_automation_history(subject='watersupply', isCompleted=True)
         else:
             logger.info("양액 시스템 상태 양호합니다.")
+        
         logger.info("양액 자동화 시스템 종료합니다.")
