@@ -17,5 +17,5 @@ class ACManager(DeviceManager):
     def check_condition(self):
         # sensor = self.select_sensor('dht22')
         # humidity, temperature = DHT22(**sensor).get_values()
-        temperature = int(self.select_last_temperature()['value'])
-        return int(self.last_automation['start']) <= temperature < int(self.last_automation['end'])
+        temperature = float(self.select_last_temperature()['value'])
+        return float(self.last_automation['start']) <= temperature < float(self.last_automation['end'])

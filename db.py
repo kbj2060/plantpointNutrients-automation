@@ -17,6 +17,11 @@ class MysqlController:
         self.curs.execute(sql)
         self.conn.commit()
 
+    def insert_environment(self, subject, value):
+        sql = (f"INSERT INTO {subject} VALUES (NULL, {value}, NOW());")
+        self.curs.execute(sql)
+        self.conn.commit()
+
     def insert_report(self, lv: str, problem: str):
         sql = (f"INSERT INTO report (level, problem)" 
                 f"VALUES (%s, %s)")

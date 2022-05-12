@@ -1,4 +1,5 @@
 import asyncio
+from db import MysqlController
 from halo import Halo
 import RPi.GPIO as GPIO
 import Adafruit_DHT as dht
@@ -47,8 +48,9 @@ from utils import detect_outlier
 #         adcout <<= 1       # first bit is 'null' so drop it
 #         return adcout      # adcout는 0부터 4095까지 값을 갖는다.
 
-class SensorBase:
+class SensorBase(MysqlController):
     def __init__(self, id: int, name: str, pin: int, createdAt: str) -> None:
+        MysqlController.__init__(self)
         self.id = id
         self.name = name
         self.pin = pin
@@ -108,5 +110,5 @@ class DHT22(SensorBase):
         humidity, temperature = self.get_values()
         logger.info(f"온도 : {temperature} / 습도 : {humidity}")
         if humidity is not None and temperature is not None:
-            asyncio.run(post_temperature(temperature))
-            asyncio.run(post_humidity(humidity))
+            self.insert_environment('temperature', temperature)
+            self.insert_environment('humidity', humidity)
